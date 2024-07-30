@@ -2,11 +2,20 @@
 
 ## [FAISS](https://github.com/facebookresearch/faiss)-Powered Semantische Suche über die RKI-Protokolle
 
-Eckdaten:
-    - OpenAI Embeddings (model=text-embedding-3-large)
-    - FAISS 
+## ACHTUNG: Alpha-Software: momentan eher nur für Bastler und Interessierte geeignet
 
-Dieses Tool benötigt einen API-Key von OpenAI:
+Eckdaten:
+
+- OpenAI Embeddings (model=text-embedding-3-large)
+- FAISS Index Search (Cosine Distance Similarity Search)
+
+Dieses Tool benötigt:
+
+- einen API-Key von OpenAI
+- das Tool `pandoc` zum Konvertieren der Word DOCX Dateien ins RST-Format
+- python3 und ein paar Pakete
+
+## Wofür ein OpenAI-API-Key?
 
 - Initial müssen alle Texte in Embeddings konvertiert werden (ca. 10h)
 - Jede Suchanfrage muss in Embeddings umgewandelt werden
@@ -18,28 +27,34 @@ Dieses Tool benötigt einen API-Key von OpenAI:
     - macht ca. 3.5Mio Tokens insgesamt
     - macht ca. 0.5 USD insgesamt
 
-- Sitzungsprotokolle runterladen, in docx-Form
-- Word-Dokumente ins RST-Format konvertieren:
-    - `./data/generate_txt.sh`
 
-```console
-$ # EINMALIG: download ./data/Sitzungsprotokolle_orig_docx.zip
+## Quickstart
+
+```shell
+# EINMALIG: download into ./data Sitzungsprotokolle_orig_docx.zip
 $ cd data
 $ unzip Sitzungsprotokolle_orig_docx.zip
 
-$ # EINMALIG: Texte ins RST-Format konvertieren
+# EINMALIG: Texte ins RST-Format konvertieren
 $ ./generate_txt.sh
 $ cd ..
 
-$ # Bei OpenAI einen API-Key besorgen.
+# Bei OpenAI einen API-Key besorgen.
 $ export OPENAI_RKI_KEY=xxxxx-xxxxx-xxxxx-xxx
+
+# EINMALIG: Optional: Python-Env anlegen
+$ python3 -m venv env
+$ source env/bin/activate # on macos
+
+# EINMALIG: Python-Pakete installieren
+$ pip install -f requirements.txt
 
 # Suchanfrage starten
 $ python main.py "Suchanfrage"
 ```
 
 Beim ersten Start werden erstmal die Embeddings von OpenAI "abgeholt". Das
-dauert ca. 10h bei meiner Internet-Verbindung
+dauert ca. 10h.
 
 Danach muss ein [FAISS](https://github.com/facebookresearch/faiss)-Index für die
 Suche aus allen Embeddings gebildet werden. Das dauert ??? auch ein bisschen, je
