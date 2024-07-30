@@ -1,0 +1,6 @@
+env/
+data/Sitzungsprotokolle_orig_docx.zip
+data/Sitzungsprotokolle_orig_docx/
+*.pkl
+*.csv
+**/__pycache__
