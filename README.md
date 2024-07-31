@@ -9,13 +9,12 @@ using FAISS for semantic search in German texts.
 
 ## WARNING: Alpha Software: currently more suitable for tinkerers and enthusiasts
 
-(Currently, the generation of embeddings is still running on my end. So, I can't
-even confirm that the program runs properly).
 
-Key points:
+### Key points:
 
-- OpenAI Embeddings (model=text-embedding-3-large)
-- FAISS Index Search (Cosine Distance Similarity Search)
+- [OpenAI
+  Embeddings](https://platform.openai.com/docs/guides/embeddings/what-are-embeddings) (model=text-embedding-3-large)
+- [FAISS](https://github.com/facebookresearch/faiss) Index Search (Cosine Distance Similarity Search)
 
 
 This tool requires:
@@ -57,8 +56,8 @@ $ source env/bin/activate # on macos
 # ONE-TIME: Install Python packages
 $ pip install -f requirements.txt
 
-# Start a search query
-$ python main.py "search query"
+# Start a search query, show 30 results
+$ python main.py ./data 30 'Lug und Betrug'
 ```
 
 At the first start, the embeddings are fetched from OpenAI. This takes about 10
