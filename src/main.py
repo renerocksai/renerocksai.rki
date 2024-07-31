@@ -1,3 +1,7 @@
+import time
+start_time  = time.time()
+
+import sys
 import os
 from docx import Document
 import openai
@@ -6,9 +10,19 @@ import numpy as np
 import pickle
 from embedding import EmbeddingCache
 from tqdm import tqdm
+import textwrap
 
 FILN_FAISS_INDEX = 'faiss.index'
 FILN_METADATA = 'metadata.pkl'
+
+if len(sys.argv) != 4:
+    print(f'Usage  : python {sys.argv[0]} path/to/data num_results query_text')
+    print(f"Example: python {sys.argv[0]} ./data 20 'Lug und Betrug'")
+    sys.exit(1)
+
+directory = sys.argv[1]
+k_results = int(sys.argv[2])
+query_text = sys.argv[3]
 
 embedding_cache = EmbeddingCache()
 
@@ -48,21 +62,25 @@ def read_text_files_by_paragraph(directory):
             para = para.strip()
             if para:  # Ensure that the text is not empty
                 texts.append(para)
-                metadata.append((filename, para, "paragraph"))
+                metadata.append((doc_path, para, "paragraph"))
     return texts, metadata
 
-def get_openai_embeddings(texts):
+def get_openai_embeddings(texts, auto_save=False, just_load=False):
     embeddings = []
-    print(f'Generating/loading embeddings for {len(texts)} texts...')
-    for index, text in enumerate(tqdm(texts)):
-        embedding = embedding_cache.get(text)
+    if len(texts) > 5:
+        print(f'Generating/loading embeddings for {len(texts)} texts...')
+        texts = tqdm(texts)
+    for index, text in enumerate(texts):
+        embedding = embedding_cache.get(text, auto_save=auto_save)
         embeddings.append(embedding)
-        if index % 500 == 0:
+        if index % 500 == 0 and not just_load:
+            print('saving')
             embedding_cache.save_cache()
     return np.array(embeddings)
 
 # by normalizing, we effectively perform a cosine search. see faiss github
 def normalize_embeddings(embeddings):
+    print('Normalizing embeddings...')
     norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
     normalized_embeddings = embeddings / norms
     return normalized_embeddings
@@ -90,39 +108,57 @@ def save_metadata(metadata, filepath):
         pickle.dump(metadata, f)
 
 def load_metadata(filepath):
+    print('Loading metadata...')
     with open(filepath, 'rb') as f:
         metadata = pickle.load(f)
     return metadata
 
-directory = './data'
-texts, metadata = read_text_files_by_paragraph(directory)
-print(f'Embedding cache holds {len(embedding_cache.values)} texts')
-embeddings = get_openai_embeddings(texts)
-embeddings = normalize_embeddings(embeddings)
+def show_result(index, distance, meta, width=180):
+    filp = meta[0]
+    filn = os.path.basename(filp)
+    text = meta[1]
+    index += 1
+    prefix = f'#{index:02} ({distance:5.3f}): {filn:64s} | '
+    subsequent_indent = ' ' * (len(prefix) - 2) + '| '
+    line = f'{prefix}{text}'
+    wrapped_text = textwrap.fill(line, width=width, initial_indent='',
+                                 subsequent_indent=subsequent_indent)
+    print(wrapped_text)
+
+
+print(f'Embedding cache holds {len(embedding_cache.values)} unique texts')
+
+if os.path.exists(FILN_METADATA):
+    metadata = load_metadata(FILN_METADATA)
+else:
+    texts, metadata = read_text_files_by_paragraph(directory)
+    embeddings = get_openai_embeddings(texts, just_load=False)
+    embeddings = normalize_embeddings(embeddings)
+    save_metadata(metadata, FILN_METADATA)
 
 if os.path.exists(FILN_FAISS_INDEX):
     # Load FAISS index and metadata
     index = load_faiss_index(FILN_FAISS_INDEX)
-    metadata = load_metadata(FILN_METADATA)
 else:
     # Create and save FAISS index and metadata
     index = create_faiss_index(embeddings)
     save_faiss_index(index,FILN_FAISS_INDEX)
-    save_metadata(metadata,FILN_METADATA)
 
-if len(embeddings) != len(metadata):
-    print(f'Documents have been added/deleted. Please remove:')
-    print(f'    - {FILN_FAISS_INDEX}')
-    print(f'    - {FILN_METADATA}')
-    print(f'    - {embedding_cache.cache_file}')
 
-# Example search
-query_text = "Lüge"
-k_results = 5
-query_embedding = get_openai_embeddings([query_text])
+
+print(f'\n=== Showing for top {k_results} matches for >>>{query_text}<<< ===\n')
+query_embedding = get_openai_embeddings([query_text],
+                                        just_load=True,
+                                        auto_save=True)
+search_start_time = time.time()
 distances, indices = search_faiss_index(index, query_embedding, k=k_results)
+search_end_time = time.time()
 
 # Retrieve corresponding document filenames and paragraph/table text
 result_metadata = [metadata[i] for i in indices[0]]
-for result in result_metadata:
-    print(f"Document: {result[0]}, Text: {result[1]}")
+result_distances = distances[0]
+for index, result in enumerate(result_metadata):
+    distance= result_distances[index]
+    show_result(index, distance, result)
+end_time = time.time()
+print(f"Search took {search_end_time-search_start_time:0.3f} seconds. {end_time-start_time:0.3f} seconds total.")

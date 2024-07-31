@@ -91,6 +91,7 @@ class EmbeddingCache:
     def load_cache(self):
         self.values = {}
         if os.path.exists(self.cache_file):
+            print('Loading embeddings cache...')
             with open(self.cache_file, 'rb') as f:
                 self.values = pickle.load(f)
         return
@@ -105,9 +106,9 @@ class EmbeddingCache:
         if sentence not in self.values:
             embedding, stats = self.model.get_embeddings(sentence)
             self.values[sentence] = embedding
+            if auto_save:
+                self.save_cache()
         else:
             embedding = self.values[sentence]
-        if auto_save:
-            self.save_cache()
         return embedding
 

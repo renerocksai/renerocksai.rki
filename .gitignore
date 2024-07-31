@@ -3,4 +3,5 @@ data/Sitzungsprotokolle_orig_docx.zip
 data/Sitzungsprotokolle_orig_docx/
 *.pkl
 *.csv
+*.index
 **/__pycache__
