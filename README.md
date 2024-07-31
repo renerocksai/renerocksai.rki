@@ -2,6 +2,9 @@
 
 ## [FAISS](https://github.com/facebookresearch/faiss)-Powered Semantische Suche über die RKI-Protokolle
 
+Dies ist ein Ad-Hoc-Forschungsprojekt zum Testen des Ansatzes, FAISS für
+semantische Suche in deutschen Texten zu verwenden.
+
 ## ACHTUNG: Alpha-Software: momentan eher nur für Bastler und Interessierte geeignet
 
 Eckdaten:
