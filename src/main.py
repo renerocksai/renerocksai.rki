@@ -3,7 +3,6 @@ start_time  = time.time()
 
 import sys
 import os
-import openai
 import faiss
 import numpy as np
 import pickle
