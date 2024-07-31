@@ -1,7 +1,11 @@
 env/
+rki_env/
 data/Sitzungsprotokolle_orig_docx.zip
 data/Sitzungsprotokolle_orig_docx/
+data/Zusatzmaterial_2020-2023/
 *.pkl
 *.csv
 *.index
 **/__pycache__
+**/.DS_Store
+**/._*
