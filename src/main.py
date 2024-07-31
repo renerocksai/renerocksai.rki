@@ -145,11 +145,11 @@ else:
     save_faiss_index(index,FILN_FAISS_INDEX)
 
 
-
 print(f'\n=== Showing top {k_results} matches for >>>{query_text}<<< ===\n')
 query_embedding = get_openai_embeddings([query_text],
                                         just_load=True,
                                         auto_save=True)
+query_embedding = normalize_embeddings(query_embedding)
 search_start_time = time.time()
 distances, indices = search_faiss_index(index, query_embedding, k=k_results)
 search_end_time = time.time()
