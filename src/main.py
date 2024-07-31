@@ -115,7 +115,7 @@ def load_metadata(filepath):
 
 def show_result(index, distance, meta, width=180):
     filp = meta[0]
-    filn = os.path.basename(filp)
+    filn = os.path.basename(filp).replace('.rst', '.docx')
     text = meta[1]
     index += 1
     prefix = f'#{index:02} ({distance:5.3f}): {filn:64s} | '
@@ -146,7 +146,7 @@ else:
 
 
 
-print(f'\n=== Showing for top {k_results} matches for >>>{query_text}<<< ===\n')
+print(f'\n=== Showing top {k_results} matches for >>>{query_text}<<< ===\n')
 query_embedding = get_openai_embeddings([query_text],
                                         just_load=True,
                                         auto_save=True)

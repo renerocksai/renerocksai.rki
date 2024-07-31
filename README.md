@@ -2,16 +2,21 @@
 
 ## [FAISS](https://github.com/facebookresearch/faiss)-Powered Semantic Search over RKI Protocols
 
-This is an ad-hoc research project to test the approach of using FAISS for semantic search in German texts.
+This is an ad-hoc research project to test the feasibility of the approach of
+using FAISS for semantic search in German texts.
+
+![](./demo/rki.demo.png)
 
 ## WARNING: Alpha Software: currently more suitable for tinkerers and enthusiasts
 
-(Currently, the generation of embeddings is still running on my end. So, I can't even confirm that the program runs properly).
+(Currently, the generation of embeddings is still running on my end. So, I can't
+even confirm that the program runs properly).
 
 Key points:
 
 - OpenAI Embeddings (model=text-embedding-3-large)
 - FAISS Index Search (Cosine Distance Similarity Search)
+
 
 This tool requires:
 
@@ -24,7 +29,8 @@ This tool requires:
 - Initially, all texts need to be converted into embeddings (approx. 10h)
 - Each search query needs to be converted into embeddings
     - however, the embeddings are cached
-    - each repeated search query with the exact same wording does not require further conversion.
+    - each repeated search query with the exact same wording does not require
+      further conversion.
 - Cost for embeddings: $0.13 / 1M tokens
     - we have 88,009 paragraphs with a mean of 39 tokens per paragraph
     - that makes approx. 3.5 million tokens in total
