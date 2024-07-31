@@ -7,14 +7,21 @@ from email.parser import BytesParser
 from email.message import EmailMessage
 
 supported_extensions = [
-  # "doc" "docx" "pdf" "xls" "xlsx" "ppt" "pptx" "html" "rtf" "ppt" "odt" "msg"
-  ".doc", ".docx", ".pdf", ".ppt", ".pptx", ".html", ".rtf", ".ppt", ".odt", ".msg",
+  ".pdf", ".html", ".rtf", ".odt", ".msg",
 ]
 
+libreoffice_extensions = [
+        ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
+]
+
+
 grep = 'grep'
+libreoffice = 'libreoffice'
+
 import platform
 if platform.system() == 'Darwin':
     grep = 'ggrep'
+    libreoffice = '/Applications/LibreOffice.app/Contents/MacOS/soffice'
 
 def get_files(directory):
     all_files = []
@@ -24,7 +31,7 @@ def get_files(directory):
             if basename.startswith('.') or basename.startswith('~'):
                 continue
             extension = os.path.splitext(filename)[1].lower()
-            if extension not in supported_extensions:
+            if (extension not in supported_extensions) and (extension not in libreoffice_extensions):
                 continue
             doc_path = os.path.join(dirpath, filename)
             all_files.append(doc_path)
@@ -86,29 +93,43 @@ def convert_file(filn):
         return None
     root, extension = os.path.splitext(filn)
     extension = extension.lower()
-    output_file = filn + '.rst'
-    
-    if extension not in supported_extensions:
-        return None
-
-    ret = 1
+    output_file = filn + '.txt'
     attachments = []
-    if extension in ['.doc', '.docx', '.html', '.odt']:
-        ret = os.system(f'pandoc "{filn}" -t rst --list-tables -o "{output_file}"')
-    elif extension == '.pdf':
-        ret = os.system(f'pdftotext "{filn}" "{output_file}"')
-    elif extension == '.rtf':
-        ret = os.system(f'unrtf --text "{filn}" > "{output_file}"')
-    elif extension in ['.ppt', '.pptx']:
-        # not sure ppt can be treated like pptx
-        ret = os.system(f'unzip -qc "{filn}" ppt/slides/slide*.xml | {grep} -oP \'(?<=<a:t>).*?(?=</a:t>)\' >"{output_file}"')
-    elif extension == '.msg':
-        raw_file = filn + '.raw'
-        ret = os.system(f'msgconvert --outfile "{raw_file}" "{filn}"')
-        attachments = save_attachments_and_strip_email(raw_file, output_file)
-    else:
-        print(f)
-        raise RuntimeError("unreachable")
+    ret = 1
+
+    if extension in supported_extensions:
+        if extension in ['.html', '.odt']:
+            ret = os.system(f'pandoc "{filn}" -t txt --list-tables -o "{output_file}"')
+        elif extension == '.pdf':
+            ret = os.system(f'pdftotext "{filn}" "{output_file}"')
+        elif extension == '.rtf':
+            ret = os.system(f'unrtf --text "{filn}" > "{output_file}"')
+        elif extension in ['.ppt', '.pptx']:
+            # not sure ppt can be treated like pptx
+            ret = os.system(f'unzip -qc "{filn}" ppt/slides/slide*.xml | {grep} -oP \'(?<=<a:t>).*?(?=</a:t>)\' >"{output_file}"')
+        elif extension == '.msg':
+            raw_file = filn + '.raw'
+            ret = os.system(f'msgconvert --outfile "{raw_file}" "{filn}"')
+            attachments = save_attachments_and_strip_email(raw_file, output_file)
+        else:
+            print(f)
+            raise RuntimeError("unreachable")
+    elif extension in libreoffice_extensions:
+        pdf_file = os.path.splitext(filn)[0] + '.pdf'
+        pdf_dir = os.path.dirname(filn)
+        ret = os.system(f'{libreoffice} --headless --convert-to pdf "{filn}" --outdir "{pdf_dir}"') 
+        if not os.path.exists(pdf_file):
+            # linux version may create .docx.pdf
+            if os.path.exists(filn + '.pdf'):
+                ret = os.system(f'mv "{filn + ".pdf"}" "{pdf_file}"')
+            else:
+                print(f'Cannot find converted PDF file for {filn}')
+                print(f'Expected {pdf_file}')
+                ret = 1
+        if ret == 0:
+            return convert_file(pdf_file)
+        else:
+            print(f'Could not convert to PDF: {filn}')
     return ret, attachments
 
 def process_folder(directory, all_attachments, error_files):
