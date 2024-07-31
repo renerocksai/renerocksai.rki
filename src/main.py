@@ -3,7 +3,6 @@ start_time  = time.time()
 
 import sys
 import os
-from docx import Document
 import openai
 import faiss
 import numpy as np
