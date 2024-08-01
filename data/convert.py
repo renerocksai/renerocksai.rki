@@ -92,9 +92,16 @@ def save_attachments_and_strip_email(raw_email, output_file):
     # Process each part of the message
     if msg.is_multipart():
         for part in msg.iter_parts():
+            if part is None:
+                continue
             result = process_part(part)
+
             if result:
-                stripped_msg.attach(result)
+                try:
+                    can_error = str(result)
+                    stripped_msg.attach(result)
+                except:
+                    pass
     else:
         # If the message is not multipart, just copy it as is
         stripped_msg.set_content(msg.get_content())
@@ -133,16 +140,21 @@ def convert_file(filn):
             raise RuntimeError("unreachable")
     elif extension in libreoffice_extensions:
         pdf_file = os.path.splitext(filn)[0] + '.pdf'
-        pdf_dir = os.path.dirname(filn)
-        ret = os.system(f'{libreoffice} --headless --convert-to pdf "{filn}" --outdir "{pdf_dir}"') 
-        if not os.path.exists(pdf_file):
-            # linux version may create .docx.pdf
-            if os.path.exists(filn + '.pdf'):
-                ret = os.system(f'mv "{filn + ".pdf"}" "{pdf_file}"')
-            else:
-                print(f'Cannot find converted PDF file for {filn}')
-                print(f'Expected {pdf_file}')
-                ret = 1
+        if os.path.exists(pdf_file):
+            # we've converted it already in a previous run
+            ret = 0
+        else:
+            pdf_dir = os.path.dirname(filn)
+            ret = os.system(f'{libreoffice} --headless --convert-to pdf "{filn}" --outdir "{pdf_dir}"') 
+            if not os.path.exists(pdf_file):
+                # linux version may create .docx.pdf
+                if os.path.exists(filn + '.pdf'):
+                    ret = os.system(f'mv "{filn + ".pdf"}" "{pdf_file}"')
+                else:
+                    print(f'Cannot find converted PDF file for {filn}')
+                    print(f'Expected {pdf_file}')
+                    ret = 1
+
         if ret == 0:
             return convert_file(pdf_file)
         else:
@@ -180,5 +192,5 @@ if __name__ == '__main__':
         if not all_attachments:
             break
 
-    print('The following files had errors:')
+    print('The following files had errors or warnings:')
     print('\n'.join(error_files))
