@@ -56,28 +56,45 @@ def save_attachments_and_strip_email(raw_email, output_file):
     for header, value in msg.items():
         stripped_msg[header] = value
 
-    # Process the email parts
+    def process_part(part):
+        content_disposition = part.get("Content-Disposition", None)
+        content_type = part.get_content_type()
+        
+        if part.is_multipart():
+            # Create a new multipart message
+            new_msg = EmailMessage()
+            new_msg.set_type(part.get_content_type())
+            for sub_part in part.iter_parts():
+                sub_result = process_part(sub_part)
+                if sub_result:
+                    new_msg.attach(sub_result)
+            return new_msg
+        elif content_disposition and ("attachment" in content_disposition or "inline" in content_disposition and content_type not in ['text/plain', 'text/html']):
+            filename = part.get_filename()
+            if not filename:
+                # Generate a filename for inline attachments if not present
+                ext = part.get_content_subtype()
+                filename = f"inline_attachment_{len(attachments) + 1}.{ext}"
+            
+            # Ensure the filename is safe
+            safe_filename = filename.replace(" ", "_")
+            filepath = os.path.join(attachments_folder, safe_filename)
+            payload = part.get_payload(decode=True)
+            if payload is not None:
+                os.makedirs(attachments_folder, exist_ok=True)
+                with open(filepath, "wb") as f:
+                    f.write(payload)
+                attachments.append(filepath)
+            return None
+        else:
+            return part
+
+    # Process each part of the message
     if msg.is_multipart():
         for part in msg.iter_parts():
-            content_disposition = part.get("Content-Disposition", None)
-            if content_disposition and ("attachment" in content_disposition or "inline" in content_disposition):
-                filename = part.get_filename()
-                if not filename:
-                    # Generate a filename for inline attachments if not present
-                    ext = part.get_content_subtype()
-                    filename = f"inline_attachment_{len(attachments) + 1}.{ext}"
-
-                # Ensure the filename is safe
-                safe_filename = filename.replace(" ", "_")
-                filepath = os.path.join(attachments_folder, safe_filename)
-                payload = part.get_payload(decode=True)
-                if payload is not None:
-                    os.makedirs(attachments_folder, exist_ok=True)
-                    with open(filepath, "wb") as f:
-                        f.write(payload)
-                    attachments.append(filepath)
-            else:
-                stripped_msg.attach(part)
+            result = process_part(part)
+            if result:
+                stripped_msg.attach(result)
     else:
         # If the message is not multipart, just copy it as is
         stripped_msg.set_content(msg.get_content())
