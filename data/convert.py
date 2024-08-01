@@ -128,9 +128,6 @@ def convert_file(filn):
             ret = os.system(f'pdftotext "{filn}" "{output_file}"')
         elif extension == '.rtf':
             ret = os.system(f'unrtf --text "{filn}" > "{output_file}"')
-        elif extension in ['.ppt', '.pptx']:
-            # not sure ppt can be treated like pptx
-            ret = os.system(f'unzip -qc "{filn}" ppt/slides/slide*.xml | {grep} -oP \'(?<=<a:t>).*?(?=</a:t>)\' >"{output_file}"')
         elif extension == '.msg':
             raw_file = filn + '.raw'
             ret = os.system(f'msgconvert --outfile "{raw_file}" "{filn}"')
