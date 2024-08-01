@@ -69,7 +69,7 @@ def save_attachments_and_strip_email(raw_email, output_file):
                 if sub_result:
                     new_msg.attach(sub_result)
             return new_msg
-        elif content_disposition and ("attachment" in content_disposition or "inline" in content_disposition and content_type not in ['text/plain', 'text/html']):
+        elif content_disposition and ("attachment" in content_disposition or "inline" in content_disposition and content_type not in ['text/plain']):
             filename = part.get_filename()
             if not filename:
                 # Generate a filename for inline attachments if not present
