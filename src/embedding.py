@@ -66,6 +66,24 @@ class Model:
         self.sentence_stats[sentence] = stats
         return embedding, stats
 
+    def get_embeddings_batch(self, batch):
+        time_start = time()
+        batch_name = f'batch-{time_start}'
+        if self.dims is None:
+            response = client.embeddings.create(model=self.name, input=batch)
+        else:
+            response = client.embeddings.create(model=self.name,
+                                                input=batch,
+                                                dimensions=self.dims)
+        time_end = time()
+        embeddings = [data.embedding for data in response.data]
+        usage = response.usage
+        stats = EmbeddingStats(prompt_tokens=usage.prompt_tokens,
+                               time=time_end - time_start)
+        self.stats.add(stats)
+        self.sentence_stats[batch_name] = stats
+        return embedding, stats
+
     def save_stats(self):
         stats_filn = f'modelstats_{self.name}_{self.dims}.csv'
         if not os.path.exists(stats_filn):
@@ -112,3 +130,17 @@ class EmbeddingCache:
             embedding = self.values[sentence]
         return embedding
 
+    def get_batch(self, sentence_batch, auto_save=False):
+        new_batch = [s for s in sentence_batch if s not in self.values]
+
+        if new_batch:
+            # we need to process some of the batch
+            embeddings, stats = self.model.get_embeddings_batch(new_batch)
+            for index, embedding in embeddings:
+                self.values[sentence_batch[index]] = embedding
+            if auto_save:
+                self.save_cache()
+        embeddings = []
+        for sentence in sentence_batch:
+            embeddings.append(self.values[sentence])
+        return embedding

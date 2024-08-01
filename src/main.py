@@ -9,6 +9,8 @@ import pickle
 from embedding import EmbeddingCache
 from tqdm import tqdm
 import textwrap
+import tiktoken
+import re
 
 FILN_FAISS_INDEX = 'faiss.index'
 FILN_METADATA = 'metadata.pkl'
@@ -23,20 +25,33 @@ k_results = int(sys.argv[2])
 query_text = sys.argv[3]
 
 embedding_cache = EmbeddingCache()
+openai_encoding = tiktoken.get_encoding('cl100k_base')
+
+space_re = re.compile(r' +')
+newline_re = re.compile(r'\n+')
+nbsp_re = re.compile(r'(&nbsp;)+')
+
+def normalize_whitespace(text):
+    # Replace multiple spaces with a single space
+    text = space_re.sub(' ', text)
+    text = newline_re.sub('\n', text)
+    text = newline_re.sub('\n', text)
+    text = nbsp_re.sub(' ', text)
+    return text
 
 def textfile_to_paras(filn):
-    with open(filn, 'rt') as f:
+    with open(filn, 'rt', encoding='utf-8', errors='ignore') as f:
         lines = [l.strip() for l in f.readlines()]
 
     paras = []
     current_para = []
     for line in lines:
         if not line:
-            paras.append(' '.join(current_para))
+            paras.append(normalize_whitespace(' '.join(current_para)))
             current_para = []
         else:
             current_para.append(line)
-    paras.append(' '.join(current_para))
+    paras.append(normalize_whitespace(' '.join(current_para)))
     return paras
 
 def read_text_files_by_paragraph(directory):
@@ -50,7 +65,7 @@ def read_text_files_by_paragraph(directory):
     all_files = []
     for dirpath, _, filenames in os.walk(directory):
         for filename in filenames:
-            if filename.endswith('.rst'):
+            if filename.endswith('.txt'):
                 doc_path = os.path.join(dirpath, filename)
                 all_files.append(doc_path)
     for doc_path in tqdm(sorted(all_files)):
@@ -60,10 +75,33 @@ def read_text_files_by_paragraph(directory):
             para = para.strip()
             if para:  # Ensure that the text is not empty
                 texts.append(para)
-                metadata.append((doc_path, para, "paragraph"))
+                metadata.append((doc_path, para, token_length(para), "paragraph"))
     return texts, metadata
 
-def get_openai_embeddings(texts, auto_save=False, just_load=False):
+def token_length(para):
+    return len(openai_encoding.encode(para))
+
+def get_token_lengths(metadata):
+    print('Calculating token lengths... Program will exit after this.')
+    token_lengths = []
+    for index, meta in enumerate(metadata):
+        current_length = meta[2]
+        if current_length > 1000:
+            if current_length > 8191:
+                print('extremely', end=' ')
+            print('big:', current_length, metadata[index][0])
+        token_lengths.append(current_length)
+    print('Max token length:', np.max(token_lengths))
+    print('Exiting voluntarily. Please comment out the line calling get_token_lengths().')
+    sys.exit(1)
+    return token_lengths
+
+def split_into_batches(texts, batch_size):
+    """Split the list of texts into smaller batches."""
+    return [texts[i:i + batch_size] for i in range(0, len(texts), batch_size)]
+
+def get_openai_embeddings(texts, auto_save=False, just_load=False, batch_size=8):
+    raise RuntimeError("RENE: TODO: implement batching based on token lengths")
     embeddings = []
     if len(texts) > 5:
         print(f'Generating/loading embeddings for {len(texts)} texts...')
@@ -75,6 +113,7 @@ def get_openai_embeddings(texts, auto_save=False, just_load=False):
             print('saving')
             embedding_cache.save_cache()
     return np.array(embeddings)
+
 
 # by normalizing, we effectively perform a cosine search. see faiss github
 def normalize_embeddings(embeddings):
@@ -113,7 +152,8 @@ def load_metadata(filepath):
 
 def show_result(index, distance, meta, width=180):
     filp = meta[0]
-    filn = os.path.basename(filp).replace('.rst', '.docx')
+    # filn = os.path.basename(filp).replace('.txt', '.docx')
+    filn = os.path.basename(filp)
     text = meta[1]
     index += 1
     prefix = f'#{index:02} ({distance:5.3f}): {filn:64s} | '
@@ -130,6 +170,13 @@ if os.path.exists(FILN_METADATA):
     metadata = load_metadata(FILN_METADATA)
 else:
     texts, metadata = read_text_files_by_paragraph(directory)
+
+    # use this to show you the max token length so you can calculate your 
+    # batch size. the embedding_model can take a maximum of 8191 tokens per 
+    # request
+    get_token_lengths(metadata)
+    # ^^^---- this will exit the program, so comment it out when you're done
+
     embeddings = get_openai_embeddings(texts, just_load=False)
     embeddings = normalize_embeddings(embeddings)
     save_metadata(metadata, FILN_METADATA)
