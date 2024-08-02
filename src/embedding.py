@@ -82,7 +82,7 @@ class Model:
                                time=time_end - time_start)
         self.stats.add(stats)
         self.sentence_stats[batch_name] = stats
-        return embedding, stats
+        return embeddings, stats
 
     def save_stats(self):
         stats_filn = f'modelstats_{self.name}_{self.dims}.csv'
@@ -131,16 +131,17 @@ class EmbeddingCache:
         return embedding
 
     def get_batch(self, sentence_batch, auto_save=False):
+        # find uncached sentences
         new_batch = [s for s in sentence_batch if s not in self.values]
 
         if new_batch:
             # we need to process some of the batch
             embeddings, stats = self.model.get_embeddings_batch(new_batch)
-            for index, embedding in embeddings:
-                self.values[sentence_batch[index]] = embedding
+            for embedding, sentence in zip(embeddings, new_batch):
+                self.values[sentence] = embedding
             if auto_save:
                 self.save_cache()
         embeddings = []
         for sentence in sentence_batch:
             embeddings.append(self.values[sentence])
-        return embedding
+        return embeddings
