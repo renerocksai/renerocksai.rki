@@ -9,8 +9,8 @@ import pickle
 from embedding import EmbeddingCache
 from tqdm import tqdm
 import textwrap
-import tiktoken
-import re
+
+from textloading import read_text_files_by_paragraph
 
 FILN_FAISS_INDEX = 'faiss.index'
 FILN_METADATA = 'metadata.pkl'
@@ -25,76 +25,8 @@ k_results = int(sys.argv[2])
 query_text = sys.argv[3]
 
 embedding_cache = EmbeddingCache()
-openai_encoding = tiktoken.get_encoding('cl100k_base')
 
-space_re = re.compile(r' +')
-newline_re = re.compile(r'\n+')
-nbsp_re = re.compile(r'(&nbsp;)+')
 
-def normalize_whitespace(text):
-    # Replace multiple spaces with a single space
-    text = space_re.sub(' ', text)
-    text = newline_re.sub('\n', text)
-    text = newline_re.sub('\n', text)
-    text = nbsp_re.sub(' ', text)
-    return text
-
-def textfile_to_paras(filn):
-    with open(filn, 'rt', encoding='utf-8', errors='ignore') as f:
-        lines = [l.strip() for l in f.readlines()]
-
-    paras = []
-    current_para = []
-    for line in lines:
-        if not line:
-            paras.append(normalize_whitespace(' '.join(current_para)))
-            current_para = []
-        else:
-            current_para.append(line)
-    paras.append(normalize_whitespace(' '.join(current_para)))
-    return paras
-
-def read_text_files_by_paragraph(directory):
-    """
-    return texts and metadata, where metadata is a tuple of filename,
-    paragraph text, and kind. atm kind is always paragraph.
-    """
-    texts = []
-    metadata = []  # To store the document, paragraph/table info, and the text
-    print('Loading texts...')
-    all_files = []
-    for dirpath, _, filenames in os.walk(directory):
-        for filename in filenames:
-            if filename.endswith('.txt'):
-                doc_path = os.path.join(dirpath, filename)
-                all_files.append(doc_path)
-    for doc_path in tqdm(sorted(all_files)):
-        # print('Processing', doc_path)
-        # Extract paragraphs
-        for para in textfile_to_paras(doc_path):
-            para = para.strip()
-            if para:  # Ensure that the text is not empty
-                texts.append(para)
-                metadata.append((doc_path, para, token_length(para), "paragraph"))
-    return texts, metadata
-
-def token_length(para):
-    return len(openai_encoding.encode(para))
-
-def get_token_lengths(metadata):
-    print('Calculating token lengths... Program will exit after this.')
-    token_lengths = []
-    for index, meta in enumerate(metadata):
-        current_length = meta[2]
-        if current_length > 1000:
-            if current_length > 8191:
-                print('extremely', end=' ')
-            print('big:', current_length, metadata[index][0])
-        token_lengths.append(current_length)
-    print('Max token length:', np.max(token_lengths))
-    print('Exiting voluntarily. Please comment out the line calling get_token_lengths().')
-    sys.exit(1)
-    return token_lengths
 
 def split_into_batches(texts, batch_size):
     """Split the list of texts into smaller batches."""
