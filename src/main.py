@@ -20,7 +20,7 @@ FILN_METADATA = 'metadata.pkl'
 
 def get_openai_embeddings(meta_batches, embedding_cache, auto_save=False, just_load=False, save_every=100):
     embeddings = []
-    for index, metas in enumerate(meta_batches):
+    for index, metas in enumerate(tqdm(meta_batches)):
         sentence_batch = [meta[1] for meta in metas]
         embedding = embedding_cache.get_batch(sentence_batch, auto_save=False)
         embeddings.append(embedding)
@@ -110,7 +110,7 @@ if __name__ == '__main__':
         print('Packing batches...')
         metadata_batches = create_optimal_batches(metadata)
         print(f'Generating/loading embeddings for {len(metadata)} texts in {len(metadata_batches)} batches...')
-        embedding_batches = get_openai_embeddings(metadata_batches, embedding_cache)
+        embedding_batches = get_openai_embeddings(metadata_batches, embedding_cache, just_load=False)
 
         # now flatten meta and embeddings into flat lists again
         # so they can be accessed by index returned by faiss search

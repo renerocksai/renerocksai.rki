@@ -48,11 +48,17 @@ def textfile_to_paras(filn):
     current_para = []
     for line in lines:
         if not line:
-            paras.append(normalize_whitespace(' '.join(current_para)))
+            text = normalize_whitespace(' '.join(current_para))
+            text = text.strip()
+            if len(text) > 0:
+                paras.append(text)
             current_para = []
         else:
             current_para.append(line)
-    paras.append(normalize_whitespace(' '.join(current_para)))
+    text = normalize_whitespace(' '.join(current_para))
+    text = text.strip()
+    if len(text) > 0:
+        paras.append(text)
     return paras
 
 

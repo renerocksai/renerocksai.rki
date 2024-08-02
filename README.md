@@ -1,6 +1,6 @@
 # renerocks.rki
 
-## [FAISS](https://github.com/facebookresearch/faiss)-Powered Semantic Search over RKI Protocols
+## [FAISS](https://github.com/facebookresearch/faiss)-Powered Semantic Search over RKI Protocol Leak
 
 This is an ad-hoc research project to test the feasibility of the approach of
 using FAISS for semantic search in German texts.
@@ -20,48 +20,60 @@ using FAISS for semantic search in German texts.
 This tool requires:
 
 - an API key from OpenAI
-- the tool `pandoc` to convert Word DOCX files into RST format
+- the following tools to convert everything into plain-text:
+    - pandoc
+    - poppler-utils (apt) / poppler (brew)
+    - unrtf
+    - libemail-outlook-message-perl (apt) / cpanm Email::Outlook::Message (cpanm
+      for macos)
 - python3 and a few packages
 
 ## Why an OpenAI API Key?
 
-- Initially, all texts need to be converted into embeddings (approx. 10h)
+- Initially, all texts need to be converted into embeddings (approx. 30-40 min
+  for the entire Zusatzmaterial-2020-2023.zip)
 - Each search query needs to be converted into embeddings
     - however, the embeddings are cached
     - each repeated search query with the exact same wording does not require
       further conversion.
-- Cost for embeddings: $0.13 / 1M tokens
+- Cost for Sitzungsprotokolle embeddings: $0.13 / 1M tokens
     - we have 88,009 paragraphs with a mean of 39 tokens per paragraph
     - that makes approx. 3.5 million tokens in total
-    - that makes approx. 0.5 USD in total
+    - that makes approx. 0.5 USD
+- Cost for Zusatzmaterial embeddings: $0.13 / 1M tokens
+    - we have 419,062 paragraphs
+    - 13 million tokens in total
+    - that makes approx. 1.70 USD
 
 ## Quickstart
 
 ```shell
-# ONE-TIME: download into ./data Sitzungsprotokolle_orig_docx.zip
+# ONE-TIME: download leak into ./data , e.g.: Zusatzmaterial-2020-2023.zip
+$ mkdir data 
+$ # do the download from a leak-mirror near you...
 $ cd data
-$ unzip Sitzungsprotokolle_orig_docx.zip
-
-# ONE-TIME: Convert texts into RST format
-$ ./generate_txt.sh
+$ unzip Zusatzmaterial-2020-2023.zip
 $ cd ..
-
-# Obtain an API key from OpenAI.
-$ export OPENAI_RKI_KEY=xxxxx-xxxxx-xxxxx-xxx
 
 # ONE-TIME: Optionally: Create a Python environment
 $ python3 -m venv env
-$ source env/bin/activate # on macos
+$ source env/bin/activate
 
 # ONE-TIME: Install Python packages
 $ pip install -f requirements.txt
+
+# ONE-TIME: Convert everything into plain-text format
+$ python src/convert.py ./data
+
+# Obtain an API key from OpenAI.
+$ export OPENAI_RKI_KEY=xxxxx-xxxxx-xxxxx-xxx
 
 # Start a search query, show 30 results
 $ python main.py ./data 30 'Lug und Betrug'
 ```
 
-At the first start, the embeddings are fetched from OpenAI. This takes about 10
-hours.
+At the first start, the embeddings are fetched from OpenAI. This takes about 30
+to 40 minutes.
 
 After that, a [FAISS](https://github.com/facebookresearch/faiss) index for the
 search needs to be created from all embeddings. This also takes some time,
