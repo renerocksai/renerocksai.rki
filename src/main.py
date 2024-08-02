@@ -83,17 +83,32 @@ def show_result(index, distance, meta, width=180):
                                  subsequent_indent=subsequent_indent)
     print(wrapped_text)
 
+def process_query(query_text, embedding_cache, faiss_index, metadata, k_results=20):
+    print(f'\n=== Showing top {k_results} matches for >>>{query_text}<<< ===\n')
+    query_embedding = get_query_embeddings(query_text, embedding_cache)
+    query_embedding = normalize_embeddings(query_embedding)
+    search_start_time = time.time()
+    distances, indices = search_faiss_index(faiss_index, query_embedding, k=k_results)
+    search_end_time = time.time()
+
+    # Retrieve corresponding document filenames and paragraph/table text
+    result_metadata = [metadata[i] for i in indices[0]]
+    result_distances = distances[0]
+    for index, result in enumerate(result_metadata):
+        distance = result_distances[index]
+        show_result(index, distance, result)
+    end_time = time.time()
+    print(f"Search took {search_end_time-search_start_time:0.3f} seconds. {end_time-start_time:0.3f} seconds total.")
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 4:
-        print(f'Usage  : python {sys.argv[0]} path/to/data num_results query_text')
-        print(f"Example: python {sys.argv[0]} ./data 20 'Lug und Betrug'")
+    if len(sys.argv) != 3:
+        print(f'Usage  : python {sys.argv[0]} path/to/data num_results')
+        print(f"Example: python {sys.argv[0]} ./data 20")
         sys.exit(1)
 
     directory = sys.argv[1]
     k_results = int(sys.argv[2])
-    query_text = sys.argv[3]
 
     embedding_cache = EmbeddingCache()
     print(f'Embedding cache holds {len(embedding_cache.values)} unique texts')
@@ -102,7 +117,7 @@ if __name__ == '__main__':
     if os.path.exists(FILN_METADATA):
         metadata = load_metadata(FILN_METADATA)
         # we assume that embeddings cache is full if we have metadata
-        index = load_faiss_index(FILN_FAISS_INDEX)
+        faiss_index = load_faiss_index(FILN_FAISS_INDEX)
     else:
         metadata = read_text_files_by_paragraph(directory)
 
@@ -114,6 +129,7 @@ if __name__ == '__main__':
 
         # now flatten meta and embeddings into flat lists again
         # so they can be accessed by index returned by faiss search
+        print('Re-organizing...')
         embeddings = []
         metadata = []
         for meta_batch, embedding_batch in zip(metadata_batches, embedding_batches):
@@ -125,24 +141,15 @@ if __name__ == '__main__':
         embeddings = np.array(embeddings)
         embeddings = normalize_embeddings(embeddings)
         # save cache after that
+        print('Saving embeddings...')
         embedding_cache.save_cache()
         save_metadata(metadata, FILN_METADATA)
-        index = create_faiss_index(embeddings)
-        save_faiss_index(index,FILN_FAISS_INDEX)
+        faiss_index = create_faiss_index(embeddings)
+        save_faiss_index(faiss_index,FILN_FAISS_INDEX)
 
+    while True:
+        query = input("Enter your query (or type 'exit' to quit): ")
+        if query.lower() == 'exit':
+            break
+        process_query(query, embedding_cache, faiss_index, metadata, k_results=k_results)
 
-    print(f'\n=== Showing top {k_results} matches for >>>{query_text}<<< ===\n')
-    query_embedding = get_query_embeddings(query_text, embedding_cache)
-    query_embedding = normalize_embeddings(query_embedding)
-    search_start_time = time.time()
-    distances, indices = search_faiss_index(index, query_embedding, k=k_results)
-    search_end_time = time.time()
-
-    # Retrieve corresponding document filenames and paragraph/table text
-    result_metadata = [metadata[i] for i in indices[0]]
-    result_distances = distances[0]
-    for index, result in enumerate(result_metadata):
-        distance = result_distances[index]
-        show_result(index, distance, result)
-    end_time = time.time()
-    print(f"Search took {search_end_time-search_start_time:0.3f} seconds. {end_time-start_time:0.3f} seconds total.")
