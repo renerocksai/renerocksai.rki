@@ -74,9 +74,8 @@ def show_result(result_number, metas, result_index, distance,
                 break
             ctx_iter += 1
             # add context before
-            delta_idx = num_contexts_before - ctx_iter
-            if result_index - delta_idx >= 0:
-                prev = metas[result_index - delta_idx]
+            if result_index - ctx_iter >= 0:
+                prev = metas[result_index - ctx_iter]
                 # if same doc, extract text
                 if prev.doc_path == meta.doc_path:
                     prev = prev.para
@@ -87,9 +86,8 @@ def show_result(result_number, metas, result_index, distance,
                 else:
                     prev_exhausted = True
             # add context after
-            delta_idx = num_contexts_before + ctx_iter
-            if result_index + delta_idx < len(metas):
-                next = metas[result_index + delta_idx]
+            if result_index + ctx_iter < len(metas):
+                next = metas[result_index + ctx_iter]
                 # if same doc, extract text
                 if next.doc_path == meta.doc_path:
                     next = next.para
@@ -182,6 +180,22 @@ def process_query(query_text, embedding_cache, faiss_index, metadata, k_results=
                     output_width=num_cols - 1,
                     )
 
+def get_resources(dataset_dir, dataset_name, query_cache_name):
+    filn_metadata = os.path.join(dataset_dir, f'{dataset_name}_{FILN_METADATA}')
+    filn_faiss = os.path.join(dataset_dir, f'{dataset_name}_{FILN_FAISS_INDEX}')
+
+    # Load metadata, faiss index
+    if os.path.exists(filn_metadata):
+        metadata = load_metadata(filn_metadata)
+        # we assume that embeddings cache is full if we have metadata
+        faiss_index = load_faiss_index(filn_faiss)
+    else:
+        print(f'Dataset {dataset_name} not found in {dataset_dir}')
+        sys.exit(1)
+    query_embedding_cache = EmbeddingCache('queries', dataset_dir=dataset_dir)
+    print(f'Query Embedding cache holds {len(query_embedding_cache.values)} unique texts')
+    return metadata, faiss_index, query_embedding_cache
+
 
 if __name__ == '__main__':
     args, kwargs, flags = parse_args(sys.argv[1:])
@@ -194,21 +208,7 @@ if __name__ == '__main__':
     k_results = int(args[1])
     dataset_dir = kwargs.get('dataset_dir', '.')
 
-    # TODO: use a different embedding cache for queries
-    query_embedding_cache = EmbeddingCache('queries', dataset_dir=dataset_dir)
-    print(f'Query Embedding cache holds {len(query_embedding_cache.values)} unique texts')
-
-    filn_metadata = os.path.join(dataset_dir, f'{dataset_name}_{FILN_METADATA}')
-    filn_faiss = os.path.join(dataset_dir, f'{dataset_name}_{FILN_FAISS_INDEX}')
-
-    # Load metadata, faiss index
-    if os.path.exists(filn_metadata):
-        metadata = load_metadata(filn_metadata)
-        # we assume that embeddings cache is full if we have metadata
-        faiss_index = load_faiss_index(filn_faiss)
-    else:
-        print('Dataset not found')
-        sys.exit(1)
+    metadata, faiss_index, query_embedding_cache = get_resources(dataset_dir, dataset_name, 'query')
 
     while True:
         query = input("Enter your query (or type 'exit' to quit): ")
