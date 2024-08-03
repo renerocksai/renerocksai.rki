@@ -139,6 +139,7 @@ def show_result(result_number, metas, result_index, distance,
 
 
 def process_query(query_text, embedding_cache, faiss_index, metadata, k_results=20):
+    query_text = f'\033[31m{query_text}\033[0m'
     print(f'\n=== Showing top {k_results} matches for >>>{query_text}<<< ===\n')
     query_embedding = get_query_embeddings(query_text, embedding_cache)
     query_embedding = normalize_embeddings(query_embedding)
@@ -168,6 +169,7 @@ def process_query(query_text, embedding_cache, faiss_index, metadata, k_results=
         if text in result_texts:
             continue
         result_texts.append(text)
+        print()
         show_result(r_no, metadata, idx, dist,
                     max_filn_len=max_filn_len,
                     auto_contexts = True,
