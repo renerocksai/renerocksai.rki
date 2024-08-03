@@ -1,0 +1,28 @@
+# Use a more recent Python runtime as a parent image
+FROM python:3.11-slim
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the release-datasets directory to /datasets
+COPY datasets-release /datasets
+
+# Copy only requirements.txt to the container
+COPY requirements.txt .
+
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the contents of the src/ directory to the working directory (/app)
+COPY src/ .
+
+COPY *.env ./
+
+# Make port 5000 available to the world outside this container
+EXPOSE 5000
+
+# Define environment variable
+ENV FLASK_APP=api.py
+
+# Run app.py when the container launches
+CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:5000", "api:app"]

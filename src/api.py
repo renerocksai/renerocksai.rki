@@ -14,6 +14,9 @@ else:
 datasets_dir = os.getenv('RKI_DATASETS_DIR')
 dataset_name = os.getenv('RKI_DATASET')
 
+print('Using datasets_dir', datasets_dir)
+print('Using dataset_name', dataset_name)
+
 # N.B. don't save the query embedding cache since its name is fixed here
 #      as to avoid conflicts in multiple workers
 metadata, faiss_index, q_emb_cache = main.get_resources(datasets_dir,
