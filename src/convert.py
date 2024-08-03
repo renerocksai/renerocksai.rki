@@ -7,11 +7,12 @@ from email.parser import BytesParser
 from email.message import EmailMessage
 
 supported_extensions = [
-  ".pdf", ".html", ".rtf", ".odt", ".msg",
+  ".pdf", ".html", ".rtf", ".odt", ".msg", ".docx",
 ]
 
 libreoffice_extensions = [
-        ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
+        # ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
+        ".doc", ".xls", ".xlsx", ".ppt", ".pptx",
 ]
 
 
@@ -122,8 +123,20 @@ def convert_file(filn):
     ret = 1
 
     if extension in supported_extensions:
-        if extension in ['.html', '.odt']:
+        if extension in ['.html', '.odt', '.docx']:
             ret = os.system(f'pandoc "{filn}" -t rst --list-tables -o "{output_file}"')
+            # for word docs, create a PDF for the web
+            if extension == '.docx':
+                pdf_file = os.path.splitext(filn)[0] + '.pdf'
+                pdf_dir = os.path.dirname(filn)
+                os.system(f'{libreoffice} --headless --convert-to pdf "{filn}" --outdir "{pdf_dir}"')
+                if not os.path.exists(pdf_file):
+                    # linux version may create .docx.pdf
+                    if os.path.exists(filn + '.pdf'):
+                        ret = os.system(f'mv "{filn + ".pdf"}" "{pdf_file}"')
+                    else:
+                        print(f'Cannot find converted PDF file for {filn}')
+                        print(f'Expected {pdf_file}')
         elif extension == '.pdf':
             ret = os.system(f'pdftotext "{filn}" "{output_file}"')
         elif extension == '.rtf':
@@ -133,7 +146,7 @@ def convert_file(filn):
             ret = os.system(f'msgconvert --outfile "{raw_file}" "{filn}"')
             attachments = save_attachments_and_strip_email(raw_file, output_file)
         else:
-            print(f)
+            print(filn)
             raise RuntimeError("unreachable")
     elif extension in libreoffice_extensions:
         pdf_file = os.path.splitext(filn)[0] + '.pdf'
@@ -142,7 +155,7 @@ def convert_file(filn):
             ret = 0
         else:
             pdf_dir = os.path.dirname(filn)
-            ret = os.system(f'{libreoffice} --headless --convert-to pdf "{filn}" --outdir "{pdf_dir}"') 
+            ret = os.system(f'{libreoffice} --headless --convert-to pdf "{filn}" --outdir "{pdf_dir}"')
             if not os.path.exists(pdf_file):
                 # linux version may create .docx.pdf
                 if os.path.exists(filn + '.pdf'):
