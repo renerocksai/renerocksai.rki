@@ -37,12 +37,12 @@ This tool requires:
     - each repeated search query with the exact same wording does not require
       further conversion.
 - Cost for Sitzungsprotokolle embeddings: $0.13 / 1M tokens
-    - we have 88,009 paragraphs with a mean of 39 tokens per paragraph
-    - that makes approx. 3.5 million tokens in total
-    - that makes approx. 0.5 USD
+    - we have 51,672 paragraphs
+    - 2.016 million tokens in total
+    - that makes approx. 0.26 USD
 - Cost for Zusatzmaterial embeddings: $0.13 / 1M tokens
-    - we have 419,062 paragraphs
-    - 13 million tokens in total
+    - we have 419,946 paragraphs
+    - 12,944,836 tokens = 13 million tokens in total
     - that makes approx. 1.70 USD
 
 ## Quickstart

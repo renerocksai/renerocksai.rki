@@ -100,9 +100,9 @@ class Model:
 
 
 class EmbeddingCache:
-    def __init__(self, model=DEFAULT_MODEL):
+    def __init__(self, name, model=DEFAULT_MODEL):
         self.model = Model(name=model)
-        self.cache_file = f'__embedding_cache_{self.model.name}_{self.model.dims}.pkl'
+        self.cache_file = f'{name}_{self.model.name}_{self.model.dims}.pkl'
         self.values = {}
         self.load_cache()
 

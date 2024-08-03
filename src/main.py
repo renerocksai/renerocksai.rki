@@ -9,28 +9,13 @@ from tqdm import tqdm
 import textwrap
 import shutil
 
-from textloading import read_text_files_by_paragraph
-from batchpacking import create_optimal_batches
-
 
 FILN_FAISS_INDEX = 'faiss.index'
 FILN_METADATA = 'metadata.pkl'
 
 
-def get_openai_embeddings(meta_batches, embedding_cache, auto_save=False, just_load=False, save_every=100):
-    embeddings = []
-    for index, metas in enumerate(tqdm(meta_batches)):
-        sentence_batch = [meta.para for meta in metas]
-        embedding = embedding_cache.get_batch(sentence_batch, auto_save=False)
-        embeddings.append(embedding)
-        if index % save_every == 0 and not just_load:
-            print('saving cache')
-            embedding_cache.save_cache()
-    return embeddings
-
 def get_query_embeddings(text, embedding_cache):
-    embedding = embedding_cache.get(text, auto_save=False)   # TODO: auto_saving takes too long
-    # TODO: have a query embedding cache that is separated from the corpora's cache!
+    embedding = embedding_cache.get(text, auto_save=False)   # TODO: auto_saving takes too long if big
     return np.array([embedding])
 
 # by normalizing, we effectively perform a cosine search. see faiss github
@@ -40,36 +25,19 @@ def normalize_embeddings(embeddings):
     normalized_embeddings = embeddings / norms
     return normalized_embeddings
 
-def create_faiss_index(embeddings):
-    print('Creating FAISS index...')
-    dimension = embeddings.shape[1]
-    index = faiss.IndexFlatL2(dimension)
-    index.add(embeddings)
-    return index
-
 def search_faiss_index(index, query_embedding, k=5):
     distances, indices = index.search(query_embedding, k)
     return distances, indices
 
-def save_faiss_index(index, filepath):
-    print('Saving FAISS index...')
-    faiss.write_index(index, filepath)
-
 def load_faiss_index(filepath):
     print('Loading FAISS index...')
     return faiss.read_index(filepath)
-
-def save_metadata(metadata, filepath):
-    print('Saving metadata...')
-    with open(filepath, 'wb') as f:
-        pickle.dump(metadata, f)
 
 def load_metadata(filepath):
     print('Loading metadata...')
     with open(filepath, 'rb') as f:
         metadata = pickle.load(f)
     return metadata
-
 
 def show_result(result_number, metas, result_index, distance,
                 max_filn_len=64,
@@ -214,64 +182,32 @@ def process_query(query_text, embedding_cache, faiss_index, metadata, k_results=
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
-        print(f'Usage  : python {sys.argv[0]} path/to/data num_results')
+        print(f'Usage  : python {sys.argv[0]} dataset_name num_results')
         print(f"Example: python {sys.argv[0]} ./data 20")
         sys.exit(1)
 
-    directory = sys.argv[1]
+    dataset_name = sys.argv[1]
     k_results = int(sys.argv[2])
 
     # TODO: use a different embedding cache for queries
-    #       this will happen automatically when we split preprocessing into its
-    #       own module. Benefit: shorter startup time of main.py
-    embedding_cache = EmbeddingCache()
-    print(f'Embedding cache holds {len(embedding_cache.values)} unique texts')
+    query_embedding_cache = EmbeddingCache('queries')
+    print(f'Query Embedding cache holds {len(query_embedding_cache.values)} unique texts')
 
-    # Load or create metadata, embeddings, faiss index
-    if os.path.exists(FILN_METADATA):
-        metadata = load_metadata(FILN_METADATA)
+    filn_metadata = f'{dataset_name}_{FILN_METADATA}'
+    filn_faiss = f'{dataset_name}_{FILN_FAISS_INDEX}'
+
+    # Load metadata, faiss index
+    if os.path.exists(filn_metadata):
+        metadata = load_metadata(filn_metadata)
         # we assume that embeddings cache is full if we have metadata
-        faiss_index = load_faiss_index(FILN_FAISS_INDEX)
+        faiss_index = load_faiss_index(filn_faiss)
     else:
-        metadata = read_text_files_by_paragraph(directory)
-
-        # fill embeddings cache
-        print('Packing batches...')
-        metadata_batches = create_optimal_batches(metadata)
-        print(f'Generating/loading embeddings for {len(metadata)} texts in {len(metadata_batches)} batches...')
-        embedding_batches = get_openai_embeddings(metadata_batches, embedding_cache, just_load=False)
-
-        # now flatten meta and embeddings into flat lists again
-        # so they can be accessed by index returned by faiss search
-        print('Re-organizing...')
-        # Flatten the metadata and embedding batches
-        metadata = [meta for batch in metadata_batches for meta in batch]
-        embeddings = [embedding for batch in embedding_batches for embedding in batch]
-        # Combine metadata and embeddings into a list of tuples
-        combined = list(zip(metadata, embeddings))
-        # Sort the combined list based on the seq field of the Meta namedtuple
-        combined_sorted = sorted(combined, key=lambda x: x[0].seq)
-        # Extract the sorted metadata and embeddings
-        sorted_metadata = [meta for meta, _ in combined_sorted]
-        sorted_embeddings = [embedding for _, embedding in combined_sorted]
-        metadata = sorted_metadata
-        embeddings = sorted_embeddings
-
-        # normalize embeddings before creating the faiss index
-        print('Converting embeddings to numpy...')
-        embeddings = np.array(embeddings)
-        embeddings = normalize_embeddings(embeddings)
-
-        # save cache after that
-        print('Saving embeddings...')
-        embedding_cache.save_cache()
-        save_metadata(metadata, FILN_METADATA)
-        faiss_index = create_faiss_index(embeddings)
-        save_faiss_index(faiss_index,FILN_FAISS_INDEX)
+        print('Dataset not found')
+        sys.exit(1)
 
     while True:
         query = input("Enter your query (or type 'exit' to quit): ")
         if query.lower() == 'exit':
             break
-        process_query(query, embedding_cache, faiss_index, metadata, k_results=k_results)
+        process_query(query, query_embedding_cache, faiss_index, metadata, k_results=k_results)
 

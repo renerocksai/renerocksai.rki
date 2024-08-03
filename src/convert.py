@@ -123,7 +123,7 @@ def convert_file(filn):
 
     if extension in supported_extensions:
         if extension in ['.html', '.odt']:
-            ret = os.system(f'pandoc "{filn}" -t txt --list-tables -o "{output_file}"')
+            ret = os.system(f'pandoc "{filn}" -t rst --list-tables -o "{output_file}"')
         elif extension == '.pdf':
             ret = os.system(f'pdftotext "{filn}" "{output_file}"')
         elif extension == '.rtf':

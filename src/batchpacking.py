@@ -27,6 +27,8 @@ def create_optimal_batches(metas, max_tokens=8191, max_batch_size=2000):
 
         # If no suitable batch was found, create a new batch
         if not placed:
+            if meta.token_length >= max_tokens:
+                raise ValueError("Batch too large", meta)
             batches.append([meta])
             # Push the new batch into the heap
             heapq.heappush(heap, (tokens, len(batches) - 1))
@@ -48,3 +50,8 @@ if __name__ == '__main__':
     for b in batches[-5:]:
         bl = sum(m.token_length for m in b)
         print(bl, len(b))
+
+    tokens = [meta.token_length for meta in metas]
+
+
+    print(f'{sum(tokens)} total tokens in {len(metas)} paras')
