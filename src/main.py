@@ -221,6 +221,9 @@ if __name__ == '__main__':
     directory = sys.argv[1]
     k_results = int(sys.argv[2])
 
+    # TODO: use a different embedding cache for queries
+    #       this will happen automatically when we split preprocessing into its
+    #       own module. Benefit: shorter startup time of main.py
     embedding_cache = EmbeddingCache()
     print(f'Embedding cache holds {len(embedding_cache.values)} unique texts')
 
@@ -241,16 +244,24 @@ if __name__ == '__main__':
         # now flatten meta and embeddings into flat lists again
         # so they can be accessed by index returned by faiss search
         print('Re-organizing...')
-        embeddings = []
-        metadata = []
-        for meta_batch, embedding_batch in zip(metadata_batches, embedding_batches):
-            for meta, embedding in zip(meta_batch, embedding_batch):
-                metadata.append(meta)
-                embeddings.append(embedding)
+        # Flatten the metadata and embedding batches
+        metadata = [meta for batch in metadata_batches for meta in batch]
+        embeddings = [embedding for batch in embedding_batches for embedding in batch]
+        # Combine metadata and embeddings into a list of tuples
+        combined = list(zip(metadata, embeddings))
+        # Sort the combined list based on the seq field of the Meta namedtuple
+        combined_sorted = sorted(combined, key=lambda x: x[0].seq)
+        # Extract the sorted metadata and embeddings
+        sorted_metadata = [meta for meta, _ in combined_sorted]
+        sorted_embeddings = [embedding for _, embedding in combined_sorted]
+        metadata = sorted_metadata
+        embeddings = sorted_embeddings
 
         # normalize embeddings before creating the faiss index
+        print('Converting embeddings to numpy...')
         embeddings = np.array(embeddings)
         embeddings = normalize_embeddings(embeddings)
+
         # save cache after that
         print('Saving embeddings...')
         embedding_cache.save_cache()
