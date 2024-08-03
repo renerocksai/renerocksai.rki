@@ -4,8 +4,9 @@ FROM python:3.11-slim
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the release-datasets directory to /datasets
-COPY datasets-release /datasets
+# Copy only the specified files into the /datasets directory
+COPY datasets-release/Zusatzmaterial_RST_faiss.index datasets/Zusatzmaterial_RST_faiss.index
+COPY datasets-release/Zusatzmaterial_RST_metadata.pkl /datasets/Zusatzmaterial_RST_metadata.pkl
 
 # Copy only requirements.txt to the container
 COPY requirements.txt .
