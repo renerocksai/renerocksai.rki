@@ -20,7 +20,7 @@ FILN_METADATA = 'metadata.pkl'
 def get_openai_embeddings(meta_batches, embedding_cache, auto_save=False, just_load=False, save_every=100):
     embeddings = []
     for index, metas in enumerate(tqdm(meta_batches)):
-        sentence_batch = [meta[1] for meta in metas]
+        sentence_batch = [meta.para for meta in metas]
         embedding = embedding_cache.get_batch(sentence_batch, auto_save=False)
         embeddings.append(embedding)
         if index % save_every == 0 and not just_load:
@@ -84,8 +84,8 @@ def show_result(result_number, metas, result_index, distance,
                 ):
     result_number += 1
     meta = metas[result_index]
-    text = meta[1]
-    filp = meta[0]
+    text = meta.para
+    filp = meta.doc_path
     filn = os.path.basename(filp)
 
     output_tuples = []
@@ -109,8 +109,8 @@ def show_result(result_number, metas, result_index, distance,
             if result_index - delta_idx >= 0:
                 prev = metas[result_index - delta_idx]
                 # if same doc, extract text
-                if prev[0] == meta[0]:
-                    prev = prev[1]
+                if prev.doc_path == meta.doc_path:
+                    prev = prev.para
                     # only use if text differs from main text
                     if prev != text:
                         prev_ctx.append(prev)
@@ -122,8 +122,8 @@ def show_result(result_number, metas, result_index, distance,
             if result_index + delta_idx < len(metas):
                 next = metas[result_index + delta_idx]
                 # if same doc, extract text
-                if next[0] == meta[0]:
-                    next = next[1]
+                if next.doc_path == meta.doc_path:
+                    next = next.para
                     # only use if text differs from main text
                     if next != text:
                         next_ctx.append(next)
@@ -141,8 +141,8 @@ def show_result(result_number, metas, result_index, distance,
             if result_index - delta_idx >= 0:
                 prev = metas[result_index - delta_idx]
                 # if same doc, extract text
-                if prev[0] == meta[0]:
-                    prev = prev[1]
+                if prev.doc_path == meta.doc_path:
+                    prev = prev.para
                     # only use if text differs from main text
                     if prev != text:
                         output_tuples.append((context_on, prev, context_off))
@@ -152,8 +152,8 @@ def show_result(result_number, metas, result_index, distance,
             if result_index + delta_idx < len(metas):
                 next = metas[result_index + delta_idx]
                 # if same doc, extract text
-                if next[0] == meta[0]:
-                    next = next[1]
+                if next.doc_path == meta.doc_path:
+                    next = next.para
                     # only use if text differs from main text
                     if next != text:
                         output_tuples.append((context_on, next, context_off))
@@ -184,7 +184,7 @@ def process_query(query_text, embedding_cache, faiss_index, metadata, k_results=
 
     max_filn_len = 0
     for idx in result_indices:
-        filn_len = len(os.path.basename(metadata[idx][0]))
+        filn_len = len(os.path.basename(metadata[idx].doc_path))
         if filn_len > max_filn_len:
             max_filn_len = filn_len
 
@@ -195,11 +195,11 @@ def process_query(query_text, embedding_cache, faiss_index, metadata, k_results=
     # compact results: supress existing identical ones, regardless of doc
     result_texts = []
     for r_no, (idx, dist) in enumerate(zip(result_indices, result_distances)):
-        text = metadata[idx][1]
+        text = metadata[idx].para
         if text in result_texts:
             continue
         result_texts.append(text)
-        show_result(r_no, metadata, idx, dist, 
+        show_result(r_no, metadata, idx, dist,
                     max_filn_len=max_filn_len,
                     auto_contexts = True,
                     num_contexts_before=1,

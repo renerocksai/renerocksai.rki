@@ -2,6 +2,9 @@ import os
 from tqdm import tqdm
 import tiktoken
 import re
+from collections import namedtuple
+
+Meta = namedtuple('Meta', ['seq', 'doc_path', 'para', 'token_length', 'kind'])
 
 openai_encoding = tiktoken.get_encoding('cl100k_base')
 
@@ -27,11 +30,11 @@ def get_token_lengths(metadata):
     print('Calculating token lengths... Program will exit after this.')
     token_lengths = []
     for index, meta in enumerate(metadata):
-        current_length = meta[2]
+        current_length = meta.token_length
         if current_length > 1000:
             if current_length > 8191:
                 print('extremely', end=' ')
-            print('big:', current_length, metadata[index][0])
+            print('big:', current_length, metadata[index].doc_path)
         token_lengths.append(current_length)
     print(f'Max token length:', np.max(token_lengths))
     print(f'Total: {np.sum(token_lengths)} in {len(metadata)} texts.')
@@ -69,18 +72,24 @@ def read_text_files_by_paragraph(directory, extension='.txt'):
     """
     metadata = []  # To store the document, paragraph/table info, and the text
     print('Loading texts...')
+
+    # first, collect files
     all_files = []
     for dirpath, _, filenames in os.walk(directory):
         for filename in filenames:
             if filename.endswith(extension):
                 doc_path = os.path.join(dirpath, filename)
                 all_files.append(doc_path)
+
+    # process files
+    seq = 0
     for doc_path in tqdm(sorted(all_files)):
         # print('Processing', doc_path)
         # Extract paragraphs
         for para in textfile_to_paras(doc_path):
             para = para.strip()
             if para:  # Ensure that the text is not empty
-                metadata.append((doc_path, para, token_length(para), "paragraph"))
+                metadata.append(Meta(seq, doc_path, para, token_length(para), "paragraph"))
+                seq += 1
     return metadata
 

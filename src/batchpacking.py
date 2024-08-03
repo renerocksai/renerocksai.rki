@@ -4,7 +4,7 @@ import heapq
 
 def create_optimal_batches(metas, max_tokens=8191, max_batch_size=2000):
     # Sort the list of tuples in descending order based on the number of tokens
-    sorted_metas = sorted(metas, key=lambda x: x[2], reverse=True)
+    sorted_metas = sorted(metas, key=lambda x: x.token_length, reverse=True)
 
     # Priority queue to keep track of batches' current sizes
     heap = []
@@ -12,7 +12,7 @@ def create_optimal_batches(metas, max_tokens=8191, max_batch_size=2000):
 
     for meta in tqdm(sorted_metas):
         placed = False
-        tokens = meta[2]
+        tokens = meta.token_length
 
         # Check if there's any batch that can accommodate the current tuple
         if heap and heap[0][0] + tokens <= max_tokens:
@@ -42,9 +42,9 @@ if __name__ == '__main__':
     batches = create_optimal_batches(metas, max_tokens=max_tokens)
     print(len(batches))
     for b in batches[0:5]:
-        bl = sum(m[2] for m in b)
+        bl = sum(m.token_length for m in b)
         print(bl, len(b))
     print('...')
     for b in batches[-5:]:
-        bl = sum(m[2] for m in b)
+        bl = sum(m.token_length for m in b)
         print(bl, len(b))
