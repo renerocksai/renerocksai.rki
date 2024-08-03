@@ -5,7 +5,7 @@
 This is an ad-hoc research project to test the feasibility of the approach of
 using FAISS for semantic search in German texts.
 
-![](./demo/rki.demo.png)
+![](./demo/rki.demo2.png)
 
 ## WARNING: Alpha Software: currently more suitable for tinkerers and enthusiasts
 

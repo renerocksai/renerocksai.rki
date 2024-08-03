@@ -17,5 +17,4 @@ def parse_args(args):
                 ret_flags.add(arg[2:])
         else:
             ret_args.append(arg)
-    print( ret_args, ret_kwargs, ret_flags)
     return ret_args, ret_kwargs, ret_flags
