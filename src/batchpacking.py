@@ -10,6 +10,8 @@ def create_optimal_batches(metas, max_tokens=8191, max_batch_size=2000):
     heap = []
     batches = []
 
+    num_skipped = 0
+
     for meta in tqdm(sorted_metas):
         placed = False
         tokens = meta.token_length
@@ -28,11 +30,15 @@ def create_optimal_batches(metas, max_tokens=8191, max_batch_size=2000):
         # If no suitable batch was found, create a new batch
         if not placed:
             if meta.token_length >= max_tokens:
-                raise ValueError("Batch too large", meta)
+                # raise ValueError("Batch too large", meta.doc_path, meta.token_length)
+                # heml inline images
+                num_skipped += 1
+                continue
             batches.append([meta])
             # Push the new batch into the heap
             heapq.heappush(heap, (tokens, len(batches) - 1))
-
+    if num_skipped:
+        print('Skipped too long paras', num_skipped)
     return batches
 
 
