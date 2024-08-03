@@ -172,7 +172,7 @@ def process_query(query_text, embedding_cache, faiss_index, metadata, k_results=
         print()
         show_result(r_no, metadata, idx, dist,
                     max_filn_len=max_filn_len,
-                    auto_contexts = True,
+                    auto_contexts = 300,
                     num_contexts_before=1,
                     num_contexts_after=1,
                     context_on='\033[90m',
