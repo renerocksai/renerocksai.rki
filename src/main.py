@@ -8,6 +8,7 @@ from embedding import EmbeddingCache
 from tqdm import tqdm
 import textwrap
 import shutil
+from myargs import parse_args
 
 
 FILN_FAISS_INDEX = 'faiss.index'
@@ -181,20 +182,22 @@ def process_query(query_text, embedding_cache, faiss_index, metadata, k_results=
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 3:
+    args, kwargs, flags = parse_args(sys.argv[1:])
+    if len(args) != 2:
         print(f'Usage  : python {sys.argv[0]} dataset_name num_results')
-        print(f"Example: python {sys.argv[0]} ./data 20")
+        print(f"Example: python {sys.argv[0]} sitzungsprotokolle 20")
         sys.exit(1)
 
-    dataset_name = sys.argv[1]
-    k_results = int(sys.argv[2])
+    dataset_name = args[0]
+    k_results = int(args[1])
+    dataset_dir = kwargs.get('dataset_dir', '.')
 
     # TODO: use a different embedding cache for queries
-    query_embedding_cache = EmbeddingCache('queries')
+    query_embedding_cache = EmbeddingCache('queries', dataset_dir=dataset_dir)
     print(f'Query Embedding cache holds {len(query_embedding_cache.values)} unique texts')
 
-    filn_metadata = f'{dataset_name}_{FILN_METADATA}'
-    filn_faiss = f'{dataset_name}_{FILN_FAISS_INDEX}'
+    filn_metadata = os.path.join(dataset_dir, f'{dataset_name}_{FILN_METADATA}')
+    filn_faiss = os.path.join(dataset_dir, f'{dataset_name}_{FILN_FAISS_INDEX}')
 
     # Load metadata, faiss index
     if os.path.exists(filn_metadata):

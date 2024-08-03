@@ -62,24 +62,26 @@ $ source env/bin/activate
 # ONE-TIME: Install Python packages
 $ pip install -f requirements.txt
 
-# ONE-TIME: Convert everything into plain-text format
-$ python src/convert.py ./data
+# ONE-TIME: Create Dataset
+# convert everything into plain-text
+$ python src/convert.py ./data/Sitzungsprotokolle_orig_docx
+$ python src/preprocess.py ./data/Sitzungsprotokolle_orig_docx sitzungsprotokolle
 
 # Obtain an API key from OpenAI.
 $ export OPENAI_RKI_KEY=xxxxx-xxxxx-xxxxx-xxx
 
-# Start a search query, show 30 results
-$ python main.py ./data 30 'Lug und Betrug'
+# Start a search query on new dataset, show 30 results
+$ python main.py sitzungsprotokolle 30
 ```
 
-At the first start, the embeddings are fetched from OpenAI. This takes about 30
-to 40 minutes.
+## On Pre-Processing
+During pre-processing, the embeddings are fetched from OpenAI. This takes about
+30 to 40 minutes for the 10GB Zusatzmaterial dataset.
 
 After that, a [FAISS](https://github.com/facebookresearch/faiss) index for the
 search needs to be created from all embeddings. This also takes some time,
 depending on the CPU. Savvy programmers with an NVIDIA GPU can adjust the code
 to use the GPU variant of FAISS. It should be much faster.
 
-Once the index is calculated, it is saved and reloaded on the next program
-start. It does not need to be recalculated.
+Once the index is calculated, it is saved and ready to be queried in main.py
 

@@ -9,6 +9,7 @@ from tqdm import tqdm
 
 from textloading import read_text_files_by_paragraph
 from batchpacking import create_optimal_batches
+from myargs import parse_args
 
 
 FILN_FAISS_INDEX = 'faiss.index'
@@ -51,18 +52,27 @@ def save_metadata(metadata, filepath):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 3:
+    args, kwargs, flags = parse_args(sys.argv[1:])
+    if len(args) != 2:
         print(f'Usage  : python {sys.argv[0]} path/to/data dataset_name')
         print(f"Example: python {sys.argv[0]} ./data Zusatzpaket")
         sys.exit(1)
 
-    directory = sys.argv[1]
-    dataset_name = sys.argv[2]
+    if 'continue' in flags:
+        continue_mode = True
+    else:
+        continue_mode = False
 
-    filn_metadata = f'{dataset_name}_{FILN_METADATA}'
-    filn_faiss = f'{dataset_name}_{FILN_FAISS_INDEX}'
+    directory = args[0]
+    dataset_name = args[1]
 
-    corpus_embedding_cache = EmbeddingCache(dataset_name)
+    dataset_dir = kwargs.get('dataset_dir', '.')
+    os.makedirs(dataset_dir, exist_ok=True)
+
+    filn_metadata = os.path.join(dataset_dir, f'{dataset_name}_{FILN_METADATA}')
+    filn_faiss = os.path.join(dataset_dir, f'{dataset_name}_{FILN_FAISS_INDEX}')
+
+    corpus_embedding_cache = EmbeddingCache(dataset_name, dataset_dir=dataset_dir)
     print(f'Embedding cache holds {len(corpus_embedding_cache.values)} unique texts')
 
     metadata = read_text_files_by_paragraph(directory)
@@ -71,7 +81,7 @@ if __name__ == '__main__':
     print('Packing batches...')
     metadata_batches = create_optimal_batches(metadata)
     print(f'Generating/loading embeddings for {len(metadata)} texts in {len(metadata_batches)} batches...')
-    embedding_batches = get_openai_embeddings(metadata_batches, corpus_embedding_cache, just_load=False)
+    embedding_batches = get_openai_embeddings(metadata_batches, corpus_embedding_cache, just_load=continue_mode)
 
     # now flatten meta and embeddings into flat lists again
     # so they can be accessed by index returned by faiss search
