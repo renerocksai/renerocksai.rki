@@ -140,7 +140,7 @@ def show_result(result_number, metas, result_index, distance,
 
 def process_query(query_text, embedding_cache, faiss_index, metadata, k_results=20):
     nice_query_text = f'\033[31m{query_text}\033[0m'
-    print(f'\n=== Showing top {k_results} matches for >>>{nice_rki_new_demo.pngquery_text}<<< ===\n')
+    print(f'\n=== Showing top {k_results} matches for >>>{nice_query_text}<<< ===\n')
     query_embedding = get_query_embeddings(query_text, embedding_cache)
     query_embedding = normalize_embeddings(query_embedding)
     search_start_time = time.time()
