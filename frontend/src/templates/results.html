@@ -1,6 +1,12 @@
 {% for result in results %}
-    <div class="result">
-        {{result.meta.seq}}
-        <p>{{ result.meta.para }}</p>
+    <div class="search-result">
+        <div class="doc-path"><a href="{{  result['meta']['doc_path'] | docurl }}">{{ result['meta']['doc_path'] | basename }}<a></div>
+        {% for p in result['prev'] %}
+            <pre>{{ p['para'] }}</pre>
+        {% endfor %}
+        <pre class="matching-line">{{ result['meta']['para'] }}</pre>
+        {% for p in result['next'] %}
+            <pre>{{ p['para'] }}</pre>
+        {% endfor %}
     </div>
 {% endfor %}

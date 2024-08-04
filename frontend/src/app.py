@@ -48,6 +48,36 @@ limiter = Limiter(
 # Enable CORS if necessary
 CORS(app)
 
+def basename(path):
+    if path.endswith('.txt'):
+        path = path[:-4]
+    return os.path.basename(path)
+
+def get_url_for(doc_path):
+    """
+    data/Sitzungsprotokolle_orig_docx/2022 Original/Ergebnisprotokoll_Lage-AG-Sitzung_2022-08-25.docx.txt
+    --> https://www.rkileak.com/view?f=Sitzungsprotokolle/2023/Ergebnisprotokoll_Lage-AG-Sitzung_2023-06-07.docx
+    data/Zusatzmaterial 2020-2023/Zusatzmaterial 2020-2023/2020/2020-09-11_Lage-AG/hochladen/20200911_Lagebild Gemeinsamer Krisenstab BMI-BMG.pdf.txt
+    --> https://www.rkileak.com/view?f=Zusatzmaterial/2020/2020-09-11_Lage-AG/hochladen/20200911_Lagebild%20Gemeinsamer%20Krisenstab%20BMI-BMG.pdf
+    """
+    print(doc_path, flush=True)
+    if doc_path.endswith('.txt'):
+        doc_path = doc_path[:-4]
+
+    if doc_path.startswith('data/Sitzungsprotokolle'):
+        p = doc_path.replace('data/Sitzungsprotokolle_orig_docx/', '')
+        dname, rest = os.path.split(p)
+        year = dname.replace(' Original', '')
+        ret = f'https://www.rkileak.com/view?f=Sitzungsprotokolle/{year}/{rest}'
+        return ret
+    elif doc_path.startswith('data/Zusatzmaterial 2020-2023/Zusatzmaterial 2020-2023/'):
+        p = doc_path.replace('data/Zusatzmaterial 2020-2023/Zusatzmaterial 2020-2023/', '')
+        ret = f'https://www.rkileak.com/view?f=Zusatzmaterial/{p}'
+        return ret
+    return '#'
+
+app.jinja_env.filters['basename'] = basename
+app.jinja_env.filters['docurl'] = get_url_for
 
 # Endpoint to render the main search page
 @app.route('/')
@@ -56,6 +86,8 @@ def index():
     nonce = g.nonce
     return render_template('index.html', nonce=nonce)
 
+
+
 # Endpoint to handle search and update the results
 @app.route('/search', methods=['GET'])
 @limiter.limit("5 per minute")
@@ -63,7 +95,11 @@ def search():
     query = request.args.get('query', '')
     dataset = request.args.get('dataset', 'sitzungsprotokolle')
     num_results = request.args.get('num_results', 10)
-    remove_dupes = request.args.get('remove_dupes', 'false')
+    remove_dupes = request.args.get('remove_dupes', None)
+    if remove_dupes:
+        remove_dupes = 'true'
+    else:
+        remove_dupes = 'false'
     result_size = request.args.get('result_size', 20)
     
     if dataset == 'sitzungsprotokolle':

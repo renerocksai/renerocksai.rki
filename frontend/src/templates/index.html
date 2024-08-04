@@ -2,20 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Search Tool</title>
+    <title>Semantic Search of RKI Leak</title>
     <script src="https://unpkg.com/htmx.org@1.5.0" nonce="{{ nonce }}"></script>
     <style nonce="{{ nonce }}">
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
         }
-        .container {
+        .form-container {
             max-width: 800px;
             margin: auto;
             padding: 20px;
             border: 1px solid #ccc;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .results-container {
+            /* max-width: 800px; */
+            max-width: 80%;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: none;
         }
         h1 {
             text-align: center;
@@ -78,6 +88,11 @@
         }
         .results {
             margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
         }
         body #loading {
             display: none;
@@ -104,11 +119,37 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* individual search results */
+        .search-result {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .search-result .doc-path {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .search-result pre {
+            margin: 0;
+            font-family: monospace;
+            white-space: pre-wrap; /* Allow text to wrap inside <pre> elements */
+            word-wrap: break-word; /* Ensure long words are broken to fit within the container */
+        }
+        .search-result .matching-line {
+            /* background-color: #007bff; */
+            background-color: #ff7b00;
+            color: white;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Search Tool</h1>
+    <div class="form-container">
+        <h1>Semantic Search of RKI Leak</h1>
 
          <form id="search-form" hx-get="/search" hx-target="#results" hx-swap="innerHTML">
             <div class="field">
@@ -133,7 +174,7 @@
             <div class="field-horizontal slider-container">
                 <label for="result_size">Result Size:</label>
                 <input type="range" id="result_size" name="result_size" min="20" max="1000" value="300">
-                <output id="result_size_output">20</output>
+                <output id="result_size_output">300</output>
             </div>
             
             <div class="field">
@@ -151,9 +192,9 @@
         <div id="loading">
             <div class="spinner"></div>
         </div>
-        <div id="results" class="results">
-            <!-- Search results will be inserted here -->
-        </div>
+    </div>
+    <div id="results" class="results-container results">
+        <!-- Search results will be inserted here -->
     </div>
     <script nonce="{{ nonce }}">
         document.addEventListener('DOMContentLoaded', function() {
@@ -172,6 +213,7 @@
         
         document.body.addEventListener('htmx:afterRequest', function(evt) {
             document.getElementById('loading').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
         });
     </script>
 </body>
