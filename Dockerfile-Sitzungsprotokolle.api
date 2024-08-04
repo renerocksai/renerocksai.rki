@@ -17,13 +17,14 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the contents of the src/ directory to the working directory (/app)
 COPY src/ .
 
-COPY *.env ./
 
 # Make port 5000 available to the world outside this container
 EXPOSE 5000
 
-# Define environment variable
+# Define environment variables
 ENV FLASK_APP=api.py
+ENV RKI_DATASETS_DIR=/datasets
+ENV RKI_DATASET=Sitzungsprotokolle_RST
 
 # Run app.py when the container launches
 CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:5000", "api:app"]

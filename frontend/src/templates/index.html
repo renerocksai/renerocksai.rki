@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Tool</title>
+    <script src="https://unpkg.com/htmx.org@1.5.0"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+        .search-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .slider-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .results {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Search Tool</h1>
+        <form id="search-form" hx-get="/search" hx-target="#results" hx-swap="innerHTML" class="search-bar">
+            <input type="text" name="query" placeholder="Enter your search query" required>
+            
+            <label for="dataset">Dataset:</label>
+            <select id="dataset" name="dataset">
+                <option value="sitzungsprotokolle">Sitzungsprotokolle</option>
+                <option value="zusatzmaterial">Zusatzmaterial incl. Sitzungsprotokolle</option>
+            </select>
+            
+            <div class="slider-container">
+                <label for="num_results">Number of Results:</label>
+                <input type="range" id="num_results" name="num_results" min="1" max="50" value="10" oninput="this.nextElementSibling.value = this.value">
+                <output>10</output>
+            </div>
+            
+            <div class="slider-container">
+                <label for="result_size">Result Size:</label>
+                <input type="range" id="result_size" name="result_size" min="20" max="1000" value="20" oninput="this.nextElementSibling.value = this.value">
+                <output>20</output>
+            </div>
+            
+            <label>
+                <input type="checkbox" name="remove_dupes">
+                Remove Duplicates
+            </label>
+            
+            <button type="submit">Search</button>
+        </form>
+        <div id="results" class="results">
+            <!-- Search results will be inserted here -->
+        </div>
+    </div>
+</body>
+</html>

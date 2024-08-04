@@ -1,9 +1,8 @@
 env/
 rki_env/
+frontend_env/
+certs/
 data/
-data/Sitzungsprotokolle_orig_docx.zip
-data/Sitzungsprotokolle_orig_docx/
-data/Zusatzmaterial_2020-2023/
 *.pkl
 *.csv
 *.index
