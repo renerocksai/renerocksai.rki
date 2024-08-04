@@ -6,9 +6,7 @@ This is an ad-hoc research project to test the feasibility of the approach of
 using FAISS for semantic search in German texts.
 
 ![](./demo/rki_demo_3.png)
-
-## WARNING: Alpha Software: currently more suitable for tinkerers and enthusiasts
-
+![](./demo/rkiwebdemo.png)
 
 ### Key points:
 
@@ -84,4 +82,27 @@ depending on the CPU. Savvy programmers with an NVIDIA GPU can adjust the code
 to use the GPU variant of FAISS. It should be much faster.
 
 Once the index is calculated, it is saved and ready to be queried in main.py
+
+## The Web Interface
+
+**AFTER** [Pre-Processing](#quickstart) the datasets, you can host a web
+interface that can be built and rum with the provided `docker-compose.yml`:
+
+```shell
+# Obtain an API key from OpenAI.
+$ export OPENAI_RKI_KEY=xxxxx-xxxxx-xxxxx-xxx
+$ docker-compose up --build
+```
+
+### Caveats
+
+- There are 2 API servers:
+    - one for the Sitzungsprotokolle
+    - one for the Zusatzmaterial which also includes the Sitzungsprotokolle
+- You need to make sure 
+    - that you preprocessed the datasets in the `./data` directory
+    - and that they're named `Sitzungsprotokolle_RST` and `Zusatzmaterial_RST`
+- Only then do you not need to patch the provided Dockerfiles
+- Also, the logic in the frontend relies on 'data/...' being part of the
+  document paths for cross-linking to rkileaks.com to work
 
