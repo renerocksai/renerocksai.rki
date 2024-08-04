@@ -18,13 +18,14 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - api-sitzungsprotokolle
-      - api-zusatzmaterial
+      # - api-sitzungsprotokolle
+      # - api-zusatzmaterial
+      - api
 
-  api-sitzungsprotokolle:
+  api:
     build:
       context: .
-      dockerfile: Dockerfile-Sitzungsprotokolle.api
+      dockerfile: Dockerfile
     expose:
       - "5000"
     environment:
@@ -32,17 +33,30 @@ services:
     deploy:
       resources:
         limits:
-          memory: 2g
+          memory: 12g
 
-  api-zusatzmaterial:
-    build:
-      context: .
-      dockerfile: Dockerfile-Zusatzmaterial.api
-    expose:
-      - "5000"
-    environment:
-      - OPENAI_RKI_KEY=${OPENAI_RKI_KEY}
-    deploy:
-      resources:
-        limits:
-          memory: 8g
+  # api-sitzungsprotokolle:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile-Sitzungsprotokolle.api
+  #   expose:
+  #     - "5000"
+  #   environment:
+  #     - OPENAI_RKI_KEY=${OPENAI_RKI_KEY}
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 2g
+
+  # api-zusatzmaterial:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile-Zusatzmaterial.api
+  #   expose:
+  #     - "5000"
+  #   environment:
+  #     - OPENAI_RKI_KEY=${OPENAI_RKI_KEY}
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 8g

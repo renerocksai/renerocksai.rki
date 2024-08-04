@@ -102,13 +102,18 @@ def search():
         remove_dupes = 'false'
     result_size = request.args.get('result_size', 20)
     
-    if dataset == 'sitzungsprotokolle':
-        api_url = 'http://api-sitzungsprotokolle:5000/rkiapi/search'
-    else:
-        api_url = 'http://api-zusatzmaterial:5000/rkiapi/search'
-    
+    # if dataset == 'sitzungsprotokolle':
+    #     api_url = 'http://api-sitzungsprotokolle:5000/rkiapi/search'
+    # else:
+    #     api_url = 'http://api-zusatzmaterial:5000/rkiapi/search'
+    if dataset not in ['sitzungsprotokolle', 'zusatzmaterial']:
+        dataset = 'sitzungsprotokolle'
+
+    api_url = 'http://api:5000/rkiapi/search'
+
     try:
         response = requests.get(api_url, params={
+            'dataset': dataset,
             'query': query,
             'k_results': num_results,
             'remove_dupes': remove_dupes,
