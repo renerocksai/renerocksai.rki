@@ -180,7 +180,7 @@ def process_query(query_text, embedding_cache, faiss_index, metadata, k_results=
                     output_width=num_cols - 1,
                     )
 
-def get_resources(dataset_dir, dataset_name, query_cache_name):
+def get_resources(dataset_dir, dataset_name, query_cache_name=None):
     filn_metadata = os.path.join(dataset_dir, f'{dataset_name}_{FILN_METADATA}')
     filn_faiss = os.path.join(dataset_dir, f'{dataset_name}_{FILN_FAISS_INDEX}')
 
@@ -192,8 +192,11 @@ def get_resources(dataset_dir, dataset_name, query_cache_name):
     else:
         print(f'Dataset {dataset_name} not found in {dataset_dir}')
         sys.exit(1)
-    query_embedding_cache = EmbeddingCache('queries', dataset_dir=dataset_dir)
-    print(f'Query Embedding cache holds {len(query_embedding_cache.values)} unique texts')
+    if query_cache_name is None:
+        query_embedding_cache = None
+    else:
+        query_embedding_cache = EmbeddingCache(query_cache_name, dataset_dir=dataset_dir)
+        print(f'Query Embedding cache holds {len(query_embedding_cache.values)} unique texts')
     return metadata, faiss_index, query_embedding_cache
 
 
