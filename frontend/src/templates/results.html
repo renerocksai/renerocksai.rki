@@ -1,5 +1,6 @@
 {% for result in results %}
     <div class="result">
-        <p>{{ result.para }}</p>
+        {{result.meta.seq}}
+        <p>{{ result.meta.para }}</p>
     </div>
 {% endfor %}

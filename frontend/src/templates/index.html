@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Search Tool</title>
-    <script src="https://unpkg.com/htmx.org@1.5.0"></script>
-    <style>
+    <script src="https://unpkg.com/htmx.org@1.5.0" nonce="{{ nonce }}"></script>
+    <style nonce="{{ nonce }}">
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
@@ -12,57 +12,167 @@
         .container {
             max-width: 800px;
             margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        .search-bar {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+        h1 {
+            text-align: center;
             margin-bottom: 20px;
         }
+        .field {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field-horizontal {
+            flex-direction: row;
+            align-items: center;
+        }
+        .field-horizontal label {
+            margin-right: 10px;
+            min-width: 150px;
+        }
+
         .slider-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
+        label {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        input[type="text"], select, input[type="range"], input[type="checkbox"], button {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        input[type="text"] {
+            width: 90%;
+            margin-right: 10px;
+        }
+        input[type="range"], select, button {
+            flex-grow: 1;
+        }
+        input[type="range"] {
+            margin-left: 10px;
+            margin-right: 10px;
+            flex-grow: 2;
+        }
+
+        output {
+            min-width: 50px;
+            text-align: center;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
         .results {
             margin-top: 20px;
+        }
+        body #loading {
+            display: none;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #333;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Search Tool</h1>
-        <form id="search-form" hx-get="/search" hx-target="#results" hx-swap="innerHTML" class="search-bar">
-            <input type="text" name="query" placeholder="Enter your search query" required>
+
+         <form id="search-form" hx-get="/search" hx-target="#results" hx-swap="innerHTML">
+            <div class="field">
+                <label for="query">Search Query:</label>
+                <input type="text" id="query" name="query" placeholder="Enter your search query" required>
+            </div>
             
-            <label for="dataset">Dataset:</label>
-            <select id="dataset" name="dataset">
-                <option value="sitzungsprotokolle">Sitzungsprotokolle</option>
-                <option value="zusatzmaterial">Zusatzmaterial incl. Sitzungsprotokolle</option>
-            </select>
+            <div class="field-horizontal">
+                <label for="dataset">Dataset:</label>
+                <select id="dataset" name="dataset">
+                    <option value="sitzungsprotokolle">Sitzungsprotokolle</option>
+                    <option value="zusatzmaterial">Zusatzmaterial incl. Sitzungsprotokolle</option>
+                </select>
+            </div>
             
-            <div class="slider-container">
+            <div class="field-horizontal slider-container">
                 <label for="num_results">Number of Results:</label>
-                <input type="range" id="num_results" name="num_results" min="1" max="50" value="10" oninput="this.nextElementSibling.value = this.value">
-                <output>10</output>
+                <input type="range" id="num_results" name="num_results" min="1" max="50" value="10">
+                <output id="num_results_output">10</output>
             </div>
             
-            <div class="slider-container">
+            <div class="field-horizontal slider-container">
                 <label for="result_size">Result Size:</label>
-                <input type="range" id="result_size" name="result_size" min="20" max="1000" value="20" oninput="this.nextElementSibling.value = this.value">
-                <output>20</output>
+                <input type="range" id="result_size" name="result_size" min="20" max="1000" value="300">
+                <output id="result_size_output">20</output>
             </div>
             
-            <label>
-                <input type="checkbox" name="remove_dupes">
-                Remove Duplicates
-            </label>
+            <div class="field">
+                <label>
+                    <input type="checkbox" name="remove_dupes">
+                    Remove Duplicates
+                </label>
+            </div>
             
-            <button type="submit">Search</button>
-        </form>
+            <div class="field">
+                <button type="submit">Search</button>
+            </div>
+        </form>       
+
+        <div id="loading">
+            <div class="spinner"></div>
+        </div>
         <div id="results" class="results">
             <!-- Search results will be inserted here -->
         </div>
     </div>
+    <script nonce="{{ nonce }}">
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('num_results').addEventListener('input', function() {
+                document.getElementById('num_results_output').value = this.value;
+            });
+            document.getElementById('result_size').addEventListener('input', function() {
+                document.getElementById('result_size_output').value = this.value;
+            });
+        });
+
+       document.body.addEventListener('htmx:configRequest', function(evt) {
+            document.getElementById('results').innerHTML = '';  // Clear the current results
+            document.getElementById('loading').style.display = 'flex';
+        });
+        
+        document.body.addEventListener('htmx:afterRequest', function(evt) {
+            document.getElementById('loading').style.display = 'none';
+        });
+    </script>
 </body>
 </html>
