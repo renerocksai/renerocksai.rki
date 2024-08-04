@@ -86,7 +86,17 @@ Once the index is calculated, it is saved and ready to be queried in main.py
 ## The Web Interface
 
 **AFTER** [Pre-Processing](#quickstart) the datasets, you can host a web
-interface that can be built and rum with the provided `docker-compose.yml`:
+interface that can be built and rum with the provided `docker-compose.yml`.
+
+Run the script `setup.sh` in the frontend directory to create self-signed SSL
+certificates:
+
+```shell
+$ cd frontend
+$ ./setup.sh
+```
+
+After that, you can build and run the web interface:
 
 ```shell
 # Obtain an API key from OpenAI.
@@ -96,6 +106,7 @@ $ docker-compose up --build
 
 ### Caveats
 
+- SSL certificates need to be in ./frontend/certs (see above)
 - There are 2 API servers:
     - one for the Sitzungsprotokolle
     - one for the Zusatzmaterial which also includes the Sitzungsprotokolle
