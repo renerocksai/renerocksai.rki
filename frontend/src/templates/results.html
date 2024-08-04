@@ -1,6 +1,6 @@
 {% for result in results %}
     <div class="search-result">
-        <div class="doc-path"><a href="{{  result['meta']['doc_path'] | docurl }}">{{ result['meta']['doc_path'] | basename }}<a></div>
+        <div class="doc-path"><a href="{{  result['meta']['doc_path'] | docurl }}">{{ result['meta']['doc_path'] | basename }}</a> <span class="distance">({{result['meta']['dist']}})</span></div>
         {% for p in result['prev'] %}
             <pre>{{ p['para'] }}</pre>
         {% endfor %}

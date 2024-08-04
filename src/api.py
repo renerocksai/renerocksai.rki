@@ -93,8 +93,10 @@ def format_result(result_number, metas, result_index, distance, auto_context_siz
             else:
                 next_exhausted = True
     prev_metas.reverse()
+    meta = meta._asdict()
+    meta['dist'] = f'{distance:0.3f}'
     ret = {
-            'meta': meta._asdict(),
+            'meta': meta,
             'prev': prev_metas,
             'next': next_metas,
           }

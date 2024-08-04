@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Semantic Search of RKI Leak</title>
+    <title>Semantische Suche in #RKIFiles</title>
     <script src="https://unpkg.com/htmx.org@1.5.0" nonce="{{ nonce }}"></script>
     <style nonce="{{ nonce }}">
         body {
@@ -37,6 +37,12 @@
             flex-direction: column;
         }
 
+        .search-div {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: row;
+        }
+
         .field-horizontal {
             flex-direction: row;
             align-items: center;
@@ -54,6 +60,8 @@
         label {
             margin-right: 10px;
             font-weight: bold;
+            /* color: #404040; */
+            color: #808080;
         }
         input[type="text"], select, input[type="range"], input[type="checkbox"], button {
             padding: 10px;
@@ -64,6 +72,7 @@
         input[type="text"] {
             width: 90%;
             margin-right: 10px;
+            color: red;
         }
         input[type="range"], select, button {
             flex-grow: 1;
@@ -132,6 +141,11 @@
             font-weight: bold;
             margin-bottom: 10px;
         }
+        .search-result .doc-path .distance{
+            font-weight: normal;
+            color: grey;
+            margin-bottom: 10px;
+        }
         .search-result pre {
             margin: 0;
             font-family: monospace;
@@ -141,6 +155,7 @@
         .search-result .matching-line {
             /* background-color: #007bff; */
             background-color: #ff7b00;
+            /* background-color: #ff2020; */
             color: white;
             padding: 2px 4px;
             border-radius: 4px;
@@ -149,16 +164,19 @@
 </head>
 <body>
     <div class="form-container">
-        <h1>Semantic Search of RKI Leak</h1>
+        <h1>Semantische Suche in <a href="https://x.com/hashtag/rkifiles">#RKIFiles</a></h1>
 
          <form id="search-form" hx-get="/search" hx-target="#results" hx-swap="innerHTML">
-            <div class="field">
-                <label for="query">Search Query:</label>
-                <input type="text" id="query" name="query" placeholder="Enter your search query" required>
+            <div class="field-horizontal">
+                <label for="query">Suchbegriffe</label>
+                <div class="search-div">
+                    <input type="text" id="query" name="query" placeholder="" required>
+                    <button type="submit">Suchen</button>
+                </div>
             </div>
             
             <div class="field-horizontal">
-                <label for="dataset">Dataset:</label>
+                <label for="dataset">Ordner:</label>
                 <select id="dataset" name="dataset">
                     <option value="sitzungsprotokolle">Sitzungsprotokolle</option>
                     <option value="zusatzmaterial">Zusatzmaterial incl. Sitzungsprotokolle</option>
@@ -166,26 +184,15 @@
             </div>
             
             <div class="field-horizontal slider-container">
-                <label for="num_results">Number of Results:</label>
+                <label for="num_results">Anzahl Ergebnisse</label>
                 <input type="range" id="num_results" name="num_results" min="1" max="50" value="10">
                 <output id="num_results_output">10</output>
             </div>
             
             <div class="field-horizontal slider-container">
-                <label for="result_size">Result Size:</label>
+                <label for="result_size">Textgröße pro Ergebnis (Zeichen):</label>
                 <input type="range" id="result_size" name="result_size" min="20" max="1000" value="300">
                 <output id="result_size_output">300</output>
-            </div>
-            
-            <div class="field">
-                <label>
-                    <input type="checkbox" name="remove_dupes">
-                    Remove Duplicates
-                </label>
-            </div>
-            
-            <div class="field">
-                <button type="submit">Search</button>
             </div>
         </form>       
 
