@@ -138,7 +138,7 @@ def search():
 
 
 # API pass-through endpoint
-@app.route('/api', methods=['GET'])
+@app.route('/rkileaks_api', methods=['GET'])
 @limiter.limit("60 per minute")
 def api():
     api_url = 'http://api:5000/rkiapi/search'
