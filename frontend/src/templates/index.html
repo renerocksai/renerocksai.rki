@@ -3,11 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Semantische Suche in #RKIFiles</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <script src="https://unpkg.com/htmx.org@1.5.0" nonce="{{ nonce }}"></script>
     <style nonce="{{ nonce }}">
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
         .form-container {
             max-width: 800px;
@@ -28,6 +33,10 @@
             display: none;
         }
         h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h2 {
             text-align: center;
             margin-bottom: 20px;
         }
@@ -160,11 +169,44 @@
             padding: 2px 4px;
             border-radius: 4px;
         }
+        .footer {
+            margin-top: auto;
+            background-color: #f8f9fa;
+            text-align: center;
+            padding: 20px;
+            padding-left: 15%;
+            padding-right: 15%;
+            border-top: 1px solid #eaeaea;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+        }
+
+        .footer p {
+            margin: 0;
+            padding: 0;
+        }
+
+        .footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer .github-logo {
+            width: 24px;
+            height: 24px;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="form-container">
-        <h1>Semantische Suche in <a href="https://x.com/hashtag/rkifiles">#RKIFiles</a></h1>
+        <h2>Semantische Suche in <a href="https://x.com/hashtag/rkifiles">#RKIFiles</a></h1>
 
          <form id="search-form" hx-get="/search" hx-target="#results" hx-swap="innerHTML">
             <div class="field-horizontal">
@@ -202,6 +244,13 @@
     </div>
     <div id="results" class="results-container results">
         <!-- Search results will be inserted here -->
+    </div>
+    <div class="footer">
+        <div> &copy; 2024 <a href="https://x.com/renerocksai" target="_blank">@renerocksai</a></div>
+        <a href="https://github.com/renerocksai/renerocksai.rki" target="_blank">
+            <img src="{{ url_for('static', filename='github-mark.svg') }}" alt="GitHub" class="github-logo">
+            rki-slurp on GitHub
+        </a>
     </div>
     <script nonce="{{ nonce }}">
         document.addEventListener('DOMContentLoaded', function() {
