@@ -35,6 +35,13 @@ def process_query(query_text, embedding_cache, faiss_index, metadata,
                   remove_dupes=False,
                   auto_context_size=300,
                   ):
+
+    query_text = query_text[:300]
+    if k_results > 100:
+        k_results = 100
+    if auto_context_size > 1024:
+        auto_context_size = 1024
+
     query_embedding = main.get_query_embeddings(query_text, embedding_cache)
     query_embedding = main.normalize_embeddings(query_embedding)
     faiss_distances, faiss_indices = main.search_faiss_index(faiss_index,

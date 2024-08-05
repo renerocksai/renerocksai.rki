@@ -108,7 +108,7 @@ $ docker-compose up --build
 
 - SSL certificates need to be in ./frontend/certs (see above)
 - You need to make sure 
-    - that you preprocessed the datasets in the `./data` directory
+    - that you preprocessed the datasets in the `./datasets-release` directory
     - and that they're named `Sitzungsprotokolle_RST` and `Zusatzmaterial_RST`
 - Only then do you not need to patch the provided Dockerfile
 - Also, the logic in the frontend relies on 'data/...' being part of the

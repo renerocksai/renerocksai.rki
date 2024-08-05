@@ -105,6 +105,7 @@ def index():
 @limiter.limit("60 per minute")
 def search():
     query = request.args.get('query', '')
+    query = query[:300]
     dataset = request.args.get('dataset', 'sitzungsprotokolle')
     num_results = request.args.get('num_results', 10)
     remove_dupes = request.args.get('remove_dupes', None)
