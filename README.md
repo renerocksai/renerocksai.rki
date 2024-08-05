@@ -107,13 +107,10 @@ $ docker-compose up --build
 ### Caveats
 
 - SSL certificates need to be in ./frontend/certs (see above)
-- There are 2 API servers:
-    - one for the Sitzungsprotokolle
-    - one for the Zusatzmaterial which also includes the Sitzungsprotokolle
 - You need to make sure 
     - that you preprocessed the datasets in the `./data` directory
     - and that they're named `Sitzungsprotokolle_RST` and `Zusatzmaterial_RST`
-- Only then do you not need to patch the provided Dockerfiles
+- Only then do you not need to patch the provided Dockerfile
 - Also, the logic in the frontend relies on 'data/...' being part of the
   document paths for cross-linking to rkileaks.com to work
 
