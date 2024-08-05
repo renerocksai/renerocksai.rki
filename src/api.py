@@ -37,8 +37,8 @@ def process_query(query_text, embedding_cache, faiss_index, metadata,
                   ):
 
     query_text = query_text[:300]
-    if k_results > 100:
-        k_results = 100
+    if k_results > 500:
+        k_results = 500
     if auto_context_size > 1024:
         auto_context_size = 1024
 
