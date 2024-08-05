@@ -49,7 +49,7 @@ class Model:
             raise ValueError(f'Model {self.name} can handle only {max_dims} dims. Requested: {self.dims}')
         return
 
-    def get_embeddings(self, sentence):
+    def get_embeddings(self, sentence, keep_stats=True):
         time_start = time()
         if self.dims is None:
             response = client.embeddings.create(model=self.name, input=sentence)
@@ -59,11 +59,13 @@ class Model:
                                                 dimensions=self.dims)
         time_end = time()
         embedding = response.data[0].embedding
+
         usage = response.usage
         stats = EmbeddingStats(prompt_tokens=usage.prompt_tokens,
                                time=time_end - time_start)
-        self.stats.add(stats)
-        self.sentence_stats[sentence] = stats
+        if keep_stats:
+            self.stats.add(stats)
+            self.sentence_stats[sentence] = stats
         return embedding, stats
 
     def get_embeddings_batch(self, batch):
@@ -100,18 +102,24 @@ class Model:
 
 
 class EmbeddingCache:
-    def __init__(self, name, model=DEFAULT_MODEL, dataset_dir='.'):
+    def __init__(self, name, model=DEFAULT_MODEL, dataset_dir='.',
+                 max_cache_size=None):
         self.model = Model(name=model)
         self.cache_file = os.path.join(dataset_dir, f'{name}_{self.model.name}_{self.model.dims}.pkl')
-        self.values = {}
+        self.max_cache_size = max_cache_size
+        self.values = OrderedDict()
         self.load_cache()
 
     def load_cache(self):
-        self.values = {}
+        self.values = OrderedDict()
         if os.path.exists(self.cache_file):
             print('Loading embeddings cache...')
             with open(self.cache_file, 'rb') as f:
                 self.values = pickle.load(f)
+            # Ensure the cache does not exceed max_cache_size
+            if self.max_cache_size is not None:
+                while len(self.values) > self.max_cache_size:
+                    self.values.popitem(last=False)
         return
 
     # Save embeddings to chache
@@ -120,15 +128,32 @@ class EmbeddingCache:
             pickle.dump(self.values, f)
         self.model.save_stats()
 
-    def get(self, sentence, auto_save=False):
+    def get(self, sentence, auto_save=False, keep_stats=False):
         if sentence not in self.values:
-            embedding, stats = self.model.get_embeddings(sentence)
-            self.values[sentence] = embedding
+            embedding, stats = self.model.get_embeddings(sentence,
+                                                         keep_stats=keep_stats)
+            self.put(sentence, embedding)
             if auto_save:
                 self.save_cache()
         else:
+            # Move accessed key to the end to mark it as recently used
+            if self.max_cache_size is not None:
+                self.values.move_to_end(sentence)
             embedding = self.values[sentence]
+        print('Embedding Cache size:', len(self.values), 'model stats size:',
+              len(self.model.sentence_stats), flush=True)
         return embedding
+
+    def put(self, key, value):
+        if self.max_cache_size is not None:
+            if key in self.values:
+                # Update value and mark as recently used
+                self.values.move_to_end(key)
+        self.values[key] = value
+        if self.max_cache_size is not None:
+            if len(self.values) > self.max_cache_size:
+                # Remove the first (least recently used) item
+                self.values.popitem(last=False)
 
     def get_batch(self, sentence_batch, auto_save=False):
         # find uncached sentences

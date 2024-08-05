@@ -21,7 +21,8 @@ print('Using dataset_name', dataset_name)
 #      as to avoid conflicts in multiple workers
 metadata, faiss_index, q_emb_cache = main.get_resources(datasets_dir,
                                                         dataset_name,
-                                                        'query')
+                                                        query_cache_name='query',
+                                                        max_cache_size=50)
 
 app = Flask(__name__)
 Compress(app)

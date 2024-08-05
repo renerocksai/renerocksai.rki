@@ -15,8 +15,8 @@ FILN_FAISS_INDEX = 'faiss.index'
 FILN_METADATA = 'metadata.pkl'
 
 
-def get_query_embeddings(text, embedding_cache):
-    embedding = embedding_cache.get(text, auto_save=False)   # TODO: auto_saving takes too long if big
+def get_query_embeddings(text, embedding_cache, keep_stats=False):
+    embedding = embedding_cache.get(text, auto_save=False, keep_stats=keep_stats)   # TODO: auto_saving takes too long if big
     return np.array([embedding])
 
 # by normalizing, we effectively perform a cosine search. see faiss github
@@ -180,7 +180,7 @@ def process_query(query_text, embedding_cache, faiss_index, metadata, k_results=
                     output_width=num_cols - 1,
                     )
 
-def get_resources(dataset_dir, dataset_name, query_cache_name=None):
+def get_resources(dataset_dir, dataset_name, query_cache_name=None, max_cache_size=None):
     filn_metadata = os.path.join(dataset_dir, f'{dataset_name}_{FILN_METADATA}')
     filn_faiss = os.path.join(dataset_dir, f'{dataset_name}_{FILN_FAISS_INDEX}')
 
@@ -195,8 +195,9 @@ def get_resources(dataset_dir, dataset_name, query_cache_name=None):
     if query_cache_name is None:
         query_embedding_cache = None
     else:
-        query_embedding_cache = EmbeddingCache(query_cache_name, dataset_dir=dataset_dir)
-        print(f'Query Embedding cache holds {len(query_embedding_cache.values)} unique texts')
+        query_embedding_cache = EmbeddingCache(query_cache_name, dataset_dir=dataset_dir,
+                                               max_cache_size=max_cache_size)
+        print(f'Query Embedding cache holds {len(query_embedding_cache.values)} unique texts (max_cache_size={query_embedding_cache.max_cache_size})')
     return metadata, faiss_index, query_embedding_cache
 
 

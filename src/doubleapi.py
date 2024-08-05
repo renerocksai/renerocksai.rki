@@ -23,7 +23,9 @@ for dn in dataset_names:
     metadata, faiss_index, q_emb_cache = main.get_resources(
             datasets[dn]['path'],
             datasets[dn]['name'],
-            'query')
+            query_cache_name='query',
+            max_cache_size=50,
+            )
     datasets[dn]['faiss'] = faiss_index
     datasets[dn]['metadata'] = metadata
     datasets[dn]['qcache'] = q_emb_cache
