@@ -81,7 +81,7 @@ app.jinja_env.filters['docurl'] = get_url_for
 
 # Endpoint to render the main search page
 @app.route('/')
-@limiter.limit("10 per minute")
+@limiter.limit("60 per minute")
 def index():
     nonce = g.nonce
     return render_template('index.html', nonce=nonce)
@@ -90,7 +90,7 @@ def index():
 
 # Endpoint to handle search and update the results
 @app.route('/search', methods=['GET'])
-@limiter.limit("5 per minute")
+@limiter.limit("60 per minute")
 def search():
     query = request.args.get('query', '')
     dataset = request.args.get('dataset', 'sitzungsprotokolle')
@@ -135,6 +135,30 @@ def search():
         return render_template('results.html', results=results, nonce=g.nonce)
     else:
         return jsonify(results)
+
+
+# API pass-through endpoint
+@app.route('/api', methods=['GET'])
+@limiter.limit("60 per minute")
+def api():
+    api_url = 'http://api:5000/rkiapi/search'
+    query_params = request.args.to_dict()
+    try:
+        response = requests.get(api_url, params=query_params)
+        response.raise_for_status()  # Raise an exception for HTTP errors
+    except requests.exceptions.HTTPError as http_err:
+        print(f"HTTP error occurred: {http_err}", flush=True)
+        print(f"Response content: {response.content}", flush=True)
+        return jsonify({"error": "API request failed"}), 400
+    except Exception as err:
+        print(f"Other error occurred: {err}", flush=True)  # Python 3.3+ only
+        return jsonify({"error": "An error occurred"}), 500
+
+    # Create a response object using the original response
+    flask_response = make_response(response.content, response.status_code)
+    flask_response.headers = dict(response.headers)
+    return flask_response
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=80)
