@@ -115,6 +115,7 @@ def search():
     if dataset_name not in dataset_names:
         return jsonify({"error": "dataset name invalid"}), 400
     query = request.args.get('query')
+    print('API passthrough:', query, flush=True)
     k_results = request.args.get('k_results')
     remove_dupes = request.args.get('remove_dupes')
     auto_context_size = request.args.get('auto_context_size')
