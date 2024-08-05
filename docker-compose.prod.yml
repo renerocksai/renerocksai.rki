@@ -1,0 +1,26 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "5000:80"
+    depends_on:
+      - api
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    expose:
+      - "5000"
+    environment:
+      - OPENAI_RKI_KEY=${OPENAI_RKI_KEY}
+    deploy:
+      resources:
+        limits:
+          memory: 16g
