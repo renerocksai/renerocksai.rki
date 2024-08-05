@@ -60,7 +60,6 @@ def get_url_for(doc_path):
     data/Zusatzmaterial 2020-2023/Zusatzmaterial 2020-2023/2020/2020-09-11_Lage-AG/hochladen/20200911_Lagebild Gemeinsamer Krisenstab BMI-BMG.pdf.txt
     --> https://www.rkileak.com/view?f=Zusatzmaterial/2020/2020-09-11_Lage-AG/hochladen/20200911_Lagebild%20Gemeinsamer%20Krisenstab%20BMI-BMG.pdf
     """
-    print(doc_path, flush=True)
     if doc_path.endswith('.txt'):
         doc_path = doc_path[:-4]
 
@@ -76,8 +75,21 @@ def get_url_for(doc_path):
         return ret
     return '#'
 
+def get_path_for(doc_path):
+    if doc_path.endswith('.txt'):
+        doc_path = doc_path[:-4]
+
+    if doc_path.startswith('data/Sitzungsprotokolle'):
+        ret = doc_path.replace('data/', '')
+        return ret
+    elif doc_path.startswith('data/Zusatzmaterial 2020-2023/Zusatzmaterial 2020-2023/'):
+        ret = doc_path.replace('data/Zusatzmaterial 2020-2023', '')
+        return ret
+    return '#'
+
 app.jinja_env.filters['basename'] = basename
 app.jinja_env.filters['docurl'] = get_url_for
+app.jinja_env.filters['docpath'] = get_path_for
 
 # Endpoint to render the main search page
 @app.route('/')
