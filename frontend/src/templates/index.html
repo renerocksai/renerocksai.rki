@@ -28,12 +28,13 @@
         .results-container {
             /* max-width: 800px; */
             max-width: 80%;
+            width: 80%;
             margin: auto;
             padding: 20px;
             border: 1px solid #ccc;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            display: none;
+            /* display: none; */
         }
         h1 {
             text-align: center;
@@ -114,6 +115,10 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             background-color: #f9f9f9;
+        }
+        #results details {
+            color: grey;
+            width: 100%;
         }
         body #loading {
             display: none;
@@ -216,9 +221,9 @@
 
          <form id="search-form" hx-get="/search" hx-target="#results" hx-swap="innerHTML">
             <div class="field-horizontal">
-                <label for="query">Suchbegriffe</label>
+                <!-- <label for="query" style="color:black;">Suchtext</label> -->
                 <div class="search-div">
-                    <input type="text" id="query" name="query" placeholder="" required>
+                    <input type="text" id="query" name="query" placeholder="Suchtext..." required>
                     <button type="submit">Suchen</button>
                 </div>
             </div>
@@ -238,7 +243,7 @@
             </div>
             
             <div class="field-horizontal slider-container">
-                <label for="result_size">Textgröße pro Ergebnis (Zeichen):</label>
+                <label for="result_size">Textlänge pro Ergebnis (Zeichen):</label>
                 <input type="range" id="result_size" name="result_size" min="20" max="1000" value="300">
                 <output id="result_size_output">300</output>
             </div>
@@ -250,6 +255,41 @@
     </div>
     <div id="results" class="results-container results">
         <!-- Search results will be inserted here -->
+        <details>
+            <summary>Wie funktioniert die Semantische Suche?</summary>
+        <p>
+            Über eine KI können Texte in Zahlenreihen umgewandelt werden, die die Bedeutung
+            eines jeweiligen Textes abbilden. Man spricht von sogenannten "Text-Embeddings".
+        </p>
+
+        <p>
+            Bei jeder Suche wird der Suchtext zunächst in dieses abstrakte Embeddings-Format
+            umgewandelt und so seine Bedeutung abstrakt erfasst.
+        </p>
+
+        <p>
+            Die exakte Wortwahl spielt dann keine große Rolle mehr. Sogar die Sprache ist
+            irrelevant. Ob nach "Ausgangssperren" oder nach "curfews" gesucht wird, ist in
+            der Bedeutung egal, so auch in den Embeddings.
+        </p>
+
+        <p>
+            Um die Suchtreffer zu ermitteln, werden die Embeddings des Suchtexts mit den
+            Embeddings der zu durchsuchenden Textabschnitte verglichen.
+        </p>
+
+        <p>
+            Zu diesem Zweck haben wir vorab alle Textstellen aus dem Leak in Embeddings
+            konvertiert. So kamen insgesamt ca. 580.000 Embedding-Repräsentationen zustande.
+        </p>
+
+        <p>
+            Zur Darstellung der Ergebnisse werden zu jedem Treffer schlussendlich noch
+            umliegende Textabschnitte (meist: Zeilen) mit einbezogen, bis die gewünschte
+            Ergebnis-Länge erreicht ist. Die gefundenen Stellen werden dabei gesondert
+            hervorgehoben.
+        </p>
+
     </div>
     <div class="footer">
         <div> &copy; 2024 <a href="https://x.com/renerocksai" target="_blank">@renerocksai</a></div>
