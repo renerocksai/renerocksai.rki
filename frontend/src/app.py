@@ -138,7 +138,7 @@ def search():
         print(f"Response content: {response.content}", flush=True)
         return jsonify({"error": "API request failed"}), 400
     except Exception as err:
-        print(f"Other error occurred: {err}", flush=True)  # Python 3.3+ only
+        print(f"Other error occurred: {err}", flush=True)
         return jsonify({"error": "An error occurred"}), 500
 
     results = response.json()
@@ -167,11 +167,20 @@ def api():
         print(f"Other error occurred: {err}", flush=True)  # Python 3.3+ only
         return jsonify({"error": "An error occurred"}), 500
 
-    # Create a response object using the original response
-    flask_response = make_response(response.content, response.status_code)
-    flask_response.headers = dict(response.headers)
-    return flask_response
+    # Handle JSON response content
+    try:
+        json_data = response.json()
+    except ValueError as json_err:
+        print(f"JSON decode error: {json_err}", flush=True)
+        return jsonify({"error": "Failed to decode JSON response"}), 500
 
+    # Create a response object using the JSON data
+    flask_response = make_response(jsonify(json_data), response.status_code)
+    for key, value in response.headers.items():
+        if key.lower() != 'content-length':  # Exclude content-length to avoid mismatch
+            flask_response.headers[key] = value
+
+    return flask_response
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=80)
