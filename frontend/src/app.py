@@ -93,6 +93,22 @@ def get_path_for(doc_path):
         return ret
     return '#'
 
+def get_foreign_path(doc_path):
+    if doc_path.endswith('.txt'):
+        doc_path = doc_path[:-4]
+
+    if doc_path.startswith('data/Sitzungsprotokolle'):
+        p = doc_path.replace('data/Sitzungsprotokolle_orig_docx/', '')
+        dname, rest = os.path.split(p)
+        year = dname.replace(' Original', '')
+        ret = f'Sitzungsprotokolle/{year}/{rest}'
+        return ret
+    elif doc_path.startswith('data/Zusatzmaterial 2020-2023/Zusatzmaterial 2020-2023/'):
+        p = doc_path.replace('data/Zusatzmaterial 2020-2023/Zusatzmaterial 2020-2023/', '')
+        ret = f'Zusatzmaterial/{p}'
+        return ret
+    return '#'
+
 app.jinja_env.filters['basename'] = basename
 app.jinja_env.filters['docurl'] = get_url_for
 app.jinja_env.filters['docpath'] = get_path_for
@@ -174,14 +190,37 @@ def api():
         return jsonify({"error": "An error occurred"}), 500
 
     # Handle JSON response content
+    json_result = []
     try:
         json_data = response.json()
+        for result in json_data:
+            meta = result['meta']
+            meta['doc_path'] = get_foreign_path(meta['doc_path'])
+
+            p = result['prev']
+            new_prev = []
+            for d in p:
+                d['doc_path'] = get_foreign_path(d['doc_path'])
+                new_prev.append(d)
+            new_next = []
+            n = result['next']
+            for d in n:
+                d['doc_path'] = get_foreign_path(d['doc_path'])
+                new_next.append(d)
+            new_result = {
+                    'meta': meta,
+                    'prev': new_prev,
+                    'next': new_next,
+                    }
+            json_result.append(new_result)
+
     except ValueError as json_err:
         print(f"JSON decode error: {json_err}", flush=True)
         return jsonify({"error": "Failed to decode JSON response"}), 500
 
+    
     # Create a response object using the JSON data
-    flask_response = make_response(jsonify(json_data), response.status_code)
+    flask_response = make_response(jsonify(json_result), response.status_code)
     for key, value in response.headers.items():
         if key.lower() not in ['content-length', 'content-encoding']:
             flask_response.headers[key] = value
