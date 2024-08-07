@@ -4,6 +4,7 @@ charset-normalizer==3.3.2
 click==8.1.7
 Deprecated==1.2.14
 Flask==3.0.3
+Flask-Compress==1.15
 Flask-Cors==4.0.1
 flask-htmx==0.3.2
 Flask-Limiter==3.8.0

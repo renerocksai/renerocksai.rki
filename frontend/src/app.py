@@ -6,11 +6,17 @@ from flask_talisman import Talisman
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_cors import CORS
+from flask_compress import Compress
 import uuid
 
 
 app = Flask(__name__)
 htmx = HTMX(app)
+
+Compress(app)
+app.config['COMPRESS_ALGORITHM'] = 'gzip'
+app.config['COMPRESS_LEVEL'] = 6
+app.config['COMPRESS_MIN_SIZE'] = 500
 
 # Function to generate a nonce
 def generate_nonce():
@@ -177,7 +183,7 @@ def api():
     # Create a response object using the JSON data
     flask_response = make_response(jsonify(json_data), response.status_code)
     for key, value in response.headers.items():
-        if key.lower() != 'content-length':  # Exclude content-length to avoid mismatch
+        if key.lower() not in ['content-length', 'content-encoding']:
             flask_response.headers[key] = value
 
     return flask_response
