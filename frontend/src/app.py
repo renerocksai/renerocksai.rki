@@ -178,6 +178,7 @@ def search():
                       num_results=num_results, remove_dupes=remove_dupes,
                       result_size=result_size,
                       _external=True)
+    permalink = permalink.replace('http://', 'https://')
     twitterlink = url_for_external(
         'x.com/intent/tweet',
         text=f'Sucht mal nach 🔎 "{query}" im #RKILeak: 🔗',
