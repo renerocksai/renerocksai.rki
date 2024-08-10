@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, jsonify, g, make_response
+from flask import Flask, render_template, request, jsonify, g, make_response, url_for
 import requests
 from flask_htmx import HTMX
 from flask_talisman import Talisman
@@ -8,6 +8,7 @@ from flask_limiter.util import get_remote_address
 from flask_cors import CORS
 from flask_compress import Compress
 import uuid
+from urllib.parse import urlencode, urlunparse
 
 
 app = Flask(__name__)
@@ -18,21 +19,9 @@ app.config['COMPRESS_ALGORITHM'] = 'gzip'
 app.config['COMPRESS_LEVEL'] = 6
 app.config['COMPRESS_MIN_SIZE'] = 500
 
-# Function to generate a nonce
-def generate_nonce():
-    return uuid.uuid4().hex
-
-
-# Middleware to add nonce to the request context
-@app.before_request
-def add_nonce():
-    g.nonce = generate_nonce()
-
-
 # Middleware to set CSP headers
 @app.after_request
 def set_csp(response):
-    nonce = g.get('nonce', '')
     csp = {
         'default-src': ["'self'"],
         'script-src': ["'self'", ],
@@ -124,12 +113,23 @@ app.jinja_env.filters['docurl'] = get_url_for
 app.jinja_env.filters['docpath'] = get_path_for
 
 
+def url_for_external(base_url, **params):
+    """
+    Create a URL with query parameters for an external service.
+    
+    :param base_url: The base URL for the external service (e.g., 'https://x.com/intent/tweet').
+    :param params: Key-value pairs of query parameters to include in the URL.
+    :return: A complete URL with encoded query parameters.
+    """
+    query_string = urlencode(params)
+    return urlunparse(('https', base_url, '', '', query_string, ''))
+
+
 # Endpoint to render the main search page
 @app.route('/')
 @limiter.limit("60 per minute")
 def index():
-    nonce = g.nonce
-    return render_template('index.html', nonce=nonce)
+    return render_template('index.html')
 
 
 # Endpoint to handle search and update the results
@@ -146,7 +146,7 @@ def search():
     else:
         remove_dupes = 'false'
     result_size = request.args.get('result_size', 20)
-    
+
     # if dataset == 'sitzungsprotokolle':
     #     api_url = 'http://api-sitzungsprotokolle:5000/rkiapi/search'
     # else:
@@ -174,12 +174,24 @@ def search():
         return jsonify({"error": "An error occurred"}), 500
 
     results = response.json()
-    
-    # print('API RESULTS', results, flush=True)
-    if htmx:
-        return render_template('index.html', results=results, nonce=g.nonce)
-    else:
-        return jsonify(results)
+    permalink=url_for('search', query=query, dataset=dataset, 
+                      num_results=num_results, remove_dupes=remove_dupes,
+                      result_size=result_size,
+                      _external=True)
+    twitterlink = url_for_external(
+        'x.com/intent/tweet',
+        text=f'Sucht mal nach 🔎 "{query}" im #RKILeak: 🔗',
+        url=permalink,
+    )
+    return render_template('index.html', results=results,
+                           permalink=permalink,
+                           twitterlink=twitterlink,
+                           query=query,
+                           dataset=dataset,
+                           num_results=num_results,
+                           remove_dupes=remove_dupes,
+                           result_size=result_size,
+                           )
 
 
 # API pass-through endpoint

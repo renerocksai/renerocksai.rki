@@ -104,6 +104,19 @@ button:hover {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     background-color: #f9f9f9;
 }
+.results_heading {
+    margin: 0;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    font-size: 120%;
+}
+.results_heading a {
+    color: indianred;
+}
+
 #results details {
     color: grey;
     width: 100%;

@@ -20,7 +20,11 @@
             <div class="field-horizontal">
                 <!-- <label for="query" style="color:black;">Suchtext</label> -->
                 <div class="search-div">
-                    <input type="text" id="query" name="query" placeholder="Suchtext..." required>
+                    <input type="text" id="query" name="query" placeholder="Suchtext..." required
+                    {% if query %}
+                    value="{{query}}"
+                    {% endif %}
+                    >
                     <button type="submit">Suchen</button>
                 </div>
             </div>
@@ -28,23 +32,56 @@
             <div class="field-horizontal">
                 <label for="dataset">Ordner:</label>
                 <select id="dataset" name="dataset">
-                    <option value="sitzungsprotokolle">Sitzungsprotokolle</option>
-                    <option value="zusatzmaterial">Zusatzmaterial incl. Sitzungsprotokolle</option>
+                    <option value="sitzungsprotokolle"
+                        {% if dataset and dataset == "sitzungsprotokolle" %}
+                            selected
+                        {% endif %}
+                    >Sitzungsprotokolle</option>
+                    <option value="zusatzmaterial"
+                        {% if dataset and dataset == "zusatzmaterial" %}
+                            selected
+                        {% endif %}
+                    >Zusatzmaterial incl. Sitzungsprotokolle</option>
                 </select>
             </div>
             
             <div class="field-horizontal slider-container">
                 <label for="num_results">Anzahl Ergebnisse</label>
-                <input type="range" id="num_results" name="num_results" min="1" max="500" value="10">
-                <output id="num_results_output">10</output>
+                <input type="range" id="num_results" name="num_results" min="1" max="500" 
+                {% if num_results %}
+                    value="{{ num_results }}"
+                {% else %}
+                    value="10"
+                {% endif %}
+                >
+                <output id="num_results_output">
+                {% if num_results %}
+                    {{ num_results }}
+                {% else %}
+                    10
+                {% endif %}
+                </output>
             </div>
             
             <div class="field-horizontal slider-container">
                 <label for="result_size">Textlänge pro Ergebnis (Zeichen):</label>
-                <input type="range" id="result_size" name="result_size" min="20" max="1000" value="300">
-                <output id="result_size_output">300</output>
+                <input type="range" id="result_size" name="result_size" min="20" max="1000" 
+                {% if result_size %}
+                    value="{{ result_size }}"
+                {% else %}
+                    value="300"
+                {% endif %}
+                >
+
+                <output id="result_size_output">
+                {% if result_size %}
+                    {{ result_size }}
+                {% else %}
+                    300
+                {% endif %}
+                </output>
             </div>
-        </form>       
+        </form>
 
         <div id="loading">
             <div class="spinner"></div>
@@ -57,7 +94,7 @@
         <div> &copy; 2024 <a href="https://x.com/renerocksai" target="_blank">@renerocksai</a></div>
         <a href="https://github.com/renerocksai/renerocksai.rki" target="_blank">
             <img src="{{ url_for('static', filename='github-mark.svg') }}" alt="GitHub" class="github-logo">
-            rki-slurp on GitHub
+            rki-search on GitHub
         </a>
     </div>
     <script src="/static/startup.js"></script>

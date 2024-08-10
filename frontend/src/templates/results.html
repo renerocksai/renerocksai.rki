@@ -1,5 +1,9 @@
 <div id="search-results">
 {% if results %}
+    <div class="results_heading">
+        <div>🔗 <a href="{{ permalink }}">permalink zur Suche</a></div>
+        <div><a href="{{ twitterlink }}" target="_blank">auf <b>𝕏</b> teilen</a></div>
+    </div>
     {% for result in results %}
         <div class="search-result" title=" {{result['meta']['doc_path'] | docpath }}">
             <div class="doc-path"><a href="{{  result['meta']['doc_path'] | docurl }}" >{{ result['meta']['doc_path'] | basename }}</a> <span class="distance">({{result['meta']['dist']}})</span></div>
