@@ -1,12 +1,53 @@
-{% for result in results %}
-    <div class="search-result" title=" {{result['meta']['doc_path'] | docpath }}">
-        <div class="doc-path"><a href="{{  result['meta']['doc_path'] | docurl }}" >{{ result['meta']['doc_path'] | basename }}</a> <span class="distance">({{result['meta']['dist']}})</span></div>
-        {% for p in result['prev'] %}
-            <pre>{{ p['para'] }}</pre>
-        {% endfor %}
-        <pre class="matching-line">{{ result['meta']['para'] }}</pre>
-        {% for p in result['next'] %}
-            <pre>{{ p['para'] }}</pre>
-        {% endfor %}
-    </div>
-{% endfor %}
+<div id="search-results">
+{% if results %}
+    {% for result in results %}
+        <div class="search-result" title=" {{result['meta']['doc_path'] | docpath }}">
+            <div class="doc-path"><a href="{{  result['meta']['doc_path'] | docurl }}" >{{ result['meta']['doc_path'] | basename }}</a> <span class="distance">({{result['meta']['dist']}})</span></div>
+            {% for p in result['prev'] %}
+                <pre>{{ p['para'] }}</pre>
+            {% endfor %}
+            <pre class="matching-line">{{ result['meta']['para'] }}</pre>
+            {% for p in result['next'] %}
+                <pre>{{ p['para'] }}</pre>
+            {% endfor %}
+        </div>
+    {% endfor %}
+{% else %}
+        <details>
+            <summary>Wie funktioniert die Semantische Suche?</summary>
+        <p>
+            Über eine KI können Texte in Zahlenreihen umgewandelt werden, die die Bedeutung
+            eines jeweiligen Textes abbilden. Man spricht von sogenannten "Text-Embeddings".
+        </p>
+
+        <p>
+            Bei jeder Suche wird der Suchtext zunächst in dieses abstrakte Embeddings-Format
+            umgewandelt und so seine Bedeutung abstrakt erfasst.
+        </p>
+
+        <p>
+            Die exakte Wortwahl spielt dann keine große Rolle mehr. Sogar die Sprache ist
+            irrelevant. Ob nach "Ausgangssperren" oder nach "curfews" gesucht wird, ist in
+            der Bedeutung egal, so auch in den Embeddings.
+        </p>
+
+        <p>
+            Um die Suchtreffer zu ermitteln, werden die Embeddings des Suchtexts mit den
+            Embeddings der zu durchsuchenden Textabschnitte verglichen.
+        </p>
+
+        <p>
+            Zu diesem Zweck haben wir vorab alle Textstellen aus dem Leak in Embeddings
+            konvertiert. So kamen insgesamt ca. 580.000 Embedding-Repräsentationen zustande.
+        </p>
+
+        <p>
+            Zur Darstellung der Ergebnisse werden zu jedem Treffer schlussendlich noch
+            umliegende Textabschnitte (meist: Zeilen) mit einbezogen, bis die gewünschte
+            Ergebnis-Länge erreicht ist. Die gefundenen Stellen werden dabei gesondert
+            hervorgehoben.
+        </p>
+
+{% endif %}
+</div>
+

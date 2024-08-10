@@ -22,10 +22,12 @@ app.config['COMPRESS_MIN_SIZE'] = 500
 def generate_nonce():
     return uuid.uuid4().hex
 
+
 # Middleware to add nonce to the request context
 @app.before_request
 def add_nonce():
     g.nonce = generate_nonce()
+
 
 # Middleware to set CSP headers
 @app.after_request
@@ -33,16 +35,16 @@ def set_csp(response):
     nonce = g.get('nonce', '')
     csp = {
         'default-src': ["'self'"],
-        'script-src': ["'self'", 'https://unpkg.com', f"'nonce-{nonce}'"],
+        'script-src': ["'self'", ],
         'style-src': ["'self'", "'unsafe-inline'"]
     }
     policy = "; ".join(f"{key} {' '.join(values)}" for key, values in csp.items())
     response.headers['Content-Security-Policy'] = policy
     return response
 
+
 # Security headers with Talisman
 talisman = Talisman(app, force_https=False)
-
 
 # Rate limiting
 limiter = Limiter(
@@ -51,16 +53,23 @@ limiter = Limiter(
     default_limits=["86400 per day", "3600 per hour"]
 )
 
+
 # Enable CORS if necessary
 CORS(app)
+
+
+
 
 def basename(path):
     if path.endswith('.txt'):
         path = path[:-4]
     return os.path.basename(path)
 
+
 def get_url_for(doc_path):
     """
+    Used as filter in templates to create URLs from doc paths
+
     data/Sitzungsprotokolle_orig_docx/2022 Original/Ergebnisprotokoll_Lage-AG-Sitzung_2022-08-25.docx.txt
     --> https://www.rkileak.com/view?f=Sitzungsprotokolle/2023/Ergebnisprotokoll_Lage-AG-Sitzung_2023-06-07.docx
     data/Zusatzmaterial 2020-2023/Zusatzmaterial 2020-2023/2020/2020-09-11_Lage-AG/hochladen/20200911_Lagebild Gemeinsamer Krisenstab BMI-BMG.pdf.txt
@@ -80,6 +89,7 @@ def get_url_for(doc_path):
         ret = f'https://www.rkileak.com/view?f=Zusatzmaterial/{p}'
         return ret
     return '#'
+
 
 def get_path_for(doc_path):
     if doc_path.endswith('.txt'):
@@ -113,13 +123,13 @@ app.jinja_env.filters['basename'] = basename
 app.jinja_env.filters['docurl'] = get_url_for
 app.jinja_env.filters['docpath'] = get_path_for
 
+
 # Endpoint to render the main search page
 @app.route('/')
 @limiter.limit("60 per minute")
 def index():
     nonce = g.nonce
     return render_template('index.html', nonce=nonce)
-
 
 
 # Endpoint to handle search and update the results
@@ -167,7 +177,7 @@ def search():
     
     # print('API RESULTS', results, flush=True)
     if htmx:
-        return render_template('results.html', results=results, nonce=g.nonce)
+        return render_template('index.html', results=results, nonce=g.nonce)
     else:
         return jsonify(results)
 
