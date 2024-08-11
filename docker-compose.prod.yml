@@ -17,7 +17,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     expose:
       - "5000"
     environment:
