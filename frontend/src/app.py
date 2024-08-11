@@ -131,14 +131,14 @@ def url_for_external(base_url, **params):
 
 # Endpoint to render the main search page
 @app.route('/')
-@limiter.limit("{RATE_PER_MINUTE} per minute")
+@limiter.limit(f"{RATE_PER_MINUTE} per minute")
 def index():
     return render_template('index.html')
 
 
 # Endpoint to handle search and update the results
 @app.route('/search', methods=['GET'])
-@limiter.limit("{RATE_PER_MINUTE} per minute")
+@limiter.limit(f"{RATE_PER_MINUTE} per minute")
 def search():
     query = request.args.get('query', '')
     query = query[:300]
