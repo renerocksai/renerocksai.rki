@@ -25,5 +25,5 @@ ENV RKI_DATASET_sitzungsprotokolle=Sitzungsprotokolle_RST
 ENV RKI_DATASET_zusatzmaterial=Zusatzmaterial_RST
 
 # Run app.py when the container launches
-CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:5000", "doubleapi:app"]
+CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:5000", "doubleapi:app", "--access-logfile", "/logs/api.access.log", "--error-logfile", "/logs/api.error.log"]
 

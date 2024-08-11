@@ -27,6 +27,8 @@ services:
       resources:
         limits:
           memory: 2g
+    volumes:
+      - ./logs:/logs
 
   api:
     build:
@@ -40,4 +42,6 @@ services:
       resources:
         limits:
           memory: 12g
+    volumes:
+      - ./logs:/logs
 

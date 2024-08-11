@@ -3,6 +3,7 @@ rki_env/
 frontend_env/
 certs/
 data/
+logs/*.log
 *.pkl
 *.csv
 *.index
