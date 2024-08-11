@@ -127,16 +127,13 @@ def convert_file(filn):
             ret = os.system(f'pandoc "{filn}" -t rst --list-tables -o "{output_file}"')
             # for word docs, create a PDF for the web
             if extension == '.docx':
-                pdf_file = os.path.splitext(filn)[0] + '.pdf'
+                # in addition, also create a PDF for later viewing
+                pdf_file = filn + '.pdf'
                 pdf_dir = os.path.dirname(filn)
                 os.system(f'{libreoffice} --headless --convert-to pdf "{filn}" --outdir "{pdf_dir}"')
                 if not os.path.exists(pdf_file):
-                    # linux version may create .docx.pdf
-                    if os.path.exists(filn + '.pdf'):
-                        ret = os.system(f'mv "{filn + ".pdf"}" "{pdf_file}"')
-                    else:
-                        print(f'Cannot find converted PDF file for {filn}')
-                        print(f'Expected {pdf_file}')
+                    print(f'Cannot find converted PDF file for {filn}')
+                    print(f'Expected {pdf_file}')
         elif extension == '.pdf':
             ret = os.system(f'pdftotext "{filn}" "{output_file}"')
         elif extension == '.rtf':
@@ -149,7 +146,7 @@ def convert_file(filn):
             print(filn)
             raise RuntimeError("unreachable")
     elif extension in libreoffice_extensions:
-        pdf_file = os.path.splitext(filn)[0] + '.pdf'
+        pdf_file = filn + '.pdf'
         if os.path.exists(pdf_file):
             # we've converted it already in a previous run
             ret = 0
@@ -157,14 +154,9 @@ def convert_file(filn):
             pdf_dir = os.path.dirname(filn)
             ret = os.system(f'{libreoffice} --headless --convert-to pdf "{filn}" --outdir "{pdf_dir}"')
             if not os.path.exists(pdf_file):
-                # linux version may create .docx.pdf
-                if os.path.exists(filn + '.pdf'):
-                    ret = os.system(f'mv "{filn + ".pdf"}" "{pdf_file}"')
-                else:
-                    print(f'Cannot find converted PDF file for {filn}')
-                    print(f'Expected {pdf_file}')
-                    ret = 1
-
+                print(f'Cannot find converted PDF file for {filn}')
+                print(f'Expected {pdf_file}')
+                ret = 1
         if ret == 0:
             return convert_file(pdf_file)
         else:
