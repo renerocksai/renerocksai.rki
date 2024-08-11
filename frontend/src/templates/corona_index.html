@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Semantische Suche in #RKIFiles</title>
+    <title>Semantische Suche in Corona-Protokollen</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
@@ -13,7 +13,7 @@
 </head>
 <body>
     <div class="form-container">
-        <h2>Semantische Suche in <a href="https://x.com/hashtag/rkifiles" target="_blank">#RKIFiles</a></h1>
+        <h2>Semantische Suche in <a href="https://corona-protokolle.net" target="_blank">Corona-Protokollen</a></h1>
 
          <form id="search-form" hx-get="/search" hx-target="#results" hx-select="#search-results" hx-swap="innerHTML"
              >
@@ -32,16 +32,38 @@
             <div class="field-horizontal">
                 <label for="dataset">Ordner:</label>
                 <select id="dataset" name="dataset">
-                    <option value="sitzungsprotokolle"
-                        {% if dataset and dataset == "sitzungsprotokolle" %}
+                    <!-- <option value="sitzungsprotokolle" -->
+                    <!--     {% if dataset and dataset == "sitzungsprotokolle" %} -->
+                    <!--         selected -->
+                    <!--     {% endif %} -->
+                    <!-- >Sitzungsprotokolle</option> -->
+                    <!-- <option value="zusatzmaterial" -->
+                    <!--     {% if dataset and dataset == "zusatzmaterial" %} -->
+                    <!--         selected -->
+                    <!--     {% endif %} -->
+                    <!-- >Zusatzmaterial incl. Sitzungsprotokolle</option> -->
+
+                    <!-- 'corona_BKA', 'corona_BMG_BMI', 'corona_EXP_REGIERUNG', 'corona_MPK',] -->
+                    <option value="corona_BKA"
+                        {% if dataset and dataset == "corona_BKA" %}
                             selected
                         {% endif %}
-                    >Sitzungsprotokolle</option>
-                    <option value="zusatzmaterial"
-                        {% if dataset and dataset == "zusatzmaterial" %}
+                    >Protokolle Bundeskanzleramt Corona-Krisenstab</option>
+                    <option value="corona_BMG_BMI"
+                        {% if dataset and dataset == "corona_BMG_BMI" %}
                             selected
                         {% endif %}
-                    >Zusatzmaterial incl. Sitzungsprotokolle</option>
+                    >Protokolle BMG BMI Gemeinsamer Corona-Krisenstab</option>
+                    <option value="corona_EXP_REGIERUNG"
+                        {% if dataset and dataset == "corona_EXP_REGIERUNG" %}
+                            selected
+                        {% endif %}
+                    >Protokolle Expertenrat der Bundesregierung zur COVID-19-Pandemie</option>
+                    <option value="corona_MPK"
+                        {% if dataset and dataset == "corona_EXP_REGIERUNG" %}
+                            selected
+                        {% endif %}
+                    >Protokolle Kanzlerin Ministerpräsidenten-Konferenz</option>
                 </select>
             </div>
             
@@ -94,7 +116,7 @@
         <div> &copy; 2024 <a href="https://x.com/renerocksai" target="_blank">@renerocksai</a></div>
         <a href="https://github.com/renerocksai/renerocksai.rki" target="_blank">
             <img src="{{ url_for('static', filename='github-mark.svg') }}" alt="GitHub" class="github-logo">
-            rki-search on GitHub
+            view me on GitHub
         </a>
     </div>
     <script src="/static/startup.js"></script>

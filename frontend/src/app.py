@@ -94,6 +94,9 @@ def get_path_for(doc_path):
     elif doc_path.startswith('data/Zusatzmaterial 2020-2023/Zusatzmaterial 2020-2023/'):
         ret = doc_path.replace('data/Zusatzmaterial 2020-2023', '')
         return ret
+    elif doc_path.startswith('data/corona-protokolle/'):
+        ret = doc_path.replace('data/corona-protokolle/', '')
+        return ret
     return '#'
 
 def get_foreign_path(doc_path):
@@ -130,10 +133,16 @@ def url_for_external(base_url, **params):
 
 
 # Endpoint to render the main search page
-@app.route('/')
+@app.route('/', methods=['GET'])
 @limiter.limit(f"{RATE_PER_MINUTE} per minute")
 def index():
     return render_template('index.html')
+
+
+@app.route('/corona-protokolle', methods=['GET'])
+@limiter.limit(f"{RATE_PER_MINUTE} per minute")
+def corona_index():
+    return render_template('corona_index.html')
 
 
 # Endpoint to handle search and update the results
@@ -155,7 +164,7 @@ def search():
     #     api_url = 'http://api-sitzungsprotokolle:5000/rkiapi/search'
     # else:
     #     api_url = 'http://api-zusatzmaterial:5000/rkiapi/search'
-    if dataset not in ['sitzungsprotokolle', 'zusatzmaterial']:
+    if dataset not in ['sitzungsprotokolle', 'zusatzmaterial'] and not dataset.startswith('corona_'):
         dataset = 'sitzungsprotokolle'
 
     api_url = 'http://api:5000/rkiapi/search'
@@ -188,6 +197,10 @@ def search():
         text=f'Sucht mal nach 🔎 "{query}" im #RKILeak: 🔗',
         url=permalink,
     )
+    if 'corona_' in dataset:
+        template = 'corona_index.html'
+    else:
+        template = 'index.html'
     return render_template('index.html', results=results,
                            permalink=permalink,
                            twitterlink=twitterlink,

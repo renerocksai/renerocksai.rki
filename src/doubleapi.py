@@ -5,7 +5,9 @@ from dotenv import load_dotenv
 import main
 
 
-dataset_names = ['sitzungsprotokolle', 'zusatzmaterial']
+dataset_names = ['sitzungsprotokolle', 'zusatzmaterial', 
+                 'corona_BKA', 'corona_BMG_BMI', 'corona_EXP_REGIERUNG',
+                 'corona_MPK',]
 
 datasets = {}
 for dn in dataset_names:
@@ -38,7 +40,7 @@ app.config['COMPRESS_ALGORITHM'] = 'gzip'
 app.config['COMPRESS_LEVEL'] = 6
 app.config['COMPRESS_MIN_SIZE'] = 500
 
-def process_query(query_text, embedding_cache, faiss_index, metadata, 
+def process_query(query_text, embedding_cache, faiss_index, metadata,
                   k_results=20,
                   remove_dupes=False,
                   auto_context_size=300,
@@ -154,4 +156,3 @@ def search():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
