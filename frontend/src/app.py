@@ -35,11 +35,15 @@ def set_csp(response):
 # Security headers with Talisman
 talisman = Talisman(app, force_https=False)
 
+RATE_PER_DAY = 86400
+RATE_PER_HOUR = 3600 * 5
+RATE_PER_MINUTE = 60 * 5
+
 # Rate limiting
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["86400 per day", "3600 per hour"]
+    default_limits=[f"{RATE_PER_DAY} per day", "{RATE_PER_HOUR} per hour"]
 )
 
 
@@ -127,14 +131,14 @@ def url_for_external(base_url, **params):
 
 # Endpoint to render the main search page
 @app.route('/')
-@limiter.limit("60 per minute")
+@limiter.limit("{RATE_PER_MINUTE} per minute")
 def index():
     return render_template('index.html')
 
 
 # Endpoint to handle search and update the results
 @app.route('/search', methods=['GET'])
-@limiter.limit("60 per minute")
+@limiter.limit("{RATE_PER_MINUTE} per minute")
 def search():
     query = request.args.get('query', '')
     query = query[:300]
