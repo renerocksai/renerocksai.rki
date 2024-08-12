@@ -44,6 +44,7 @@ def process_query(query_text, embedding_cache, faiss_index, metadata,
                   k_results=20,
                   remove_dupes=False,
                   auto_context_size=300,
+                  dataset_name=''
                   ):
     query_embedding = main.get_query_embeddings(query_text, embedding_cache)
     query_embedding = main.normalize_embeddings(query_embedding)
@@ -60,11 +61,33 @@ def process_query(query_text, embedding_cache, faiss_index, metadata,
         text = metadata[idx].para
         if text in result_texts and remove_dupes:
             continue
-        results.append(format_result(r_no, metadata, idx, dist, auto_context_size))
+        results.append(format_result(r_no, metadata, idx, dist,
+                                     auto_context_size, dataset=dataset_name))
         result_texts.append(text)
     return results
 
-def format_result(result_number, metas, result_index, distance, auto_context_size):
+def cut_prev(prev, current):
+    prev = ' '.join(prev.split())
+    current = ' '.join(current.split())
+    i = 0
+    while not current.startswith(prev[i:]):
+        i += 1
+        if i >= len(prev):
+            return prev
+    return prev[:i+1]
+
+def cut_next(next, current):
+    next = ' '.join(next.split())
+    current = ' '.join(current.split())
+    i = len(next)
+    while not current.endswith(next[:i]):
+        i -= 1
+        if i == 0:
+            return next
+    return next[i:]
+
+def format_result(result_number, metas, result_index, distance,
+                  auto_context_size, dataset):
     meta = metas[result_index]
     text = meta.para
     filp = meta.doc_path
@@ -76,7 +99,11 @@ def format_result(result_number, metas, result_index, distance, auto_context_siz
     ctx_iter = 0
     prev_exhausted = False
     next_exhausted = False
+    safety_net = 0
     while len(total_text) < auto_context_size:
+        safety_net += 1
+        if safety_net == 10:
+            break
         if prev_exhausted and next_exhausted:
             break
         ctx_iter += 1
@@ -87,8 +114,11 @@ def format_result(result_number, metas, result_index, distance, auto_context_siz
             if prev.doc_path == meta.doc_path:
                 # only use if text differs from main text
                 if prev.para != text:
-                    prev_metas.append(prev._asdict())
-                    total_text += prev.para
+                    d = prev._asdict()
+                    if 'corona_' in dataset:
+                        d['para'] = cut_prev(prev.para, text)
+                    prev_metas.append(d)
+                    total_text += d['para']
             else:
                 prev_exhausted = True
         # add context after
@@ -98,8 +128,11 @@ def format_result(result_number, metas, result_index, distance, auto_context_siz
             if next.doc_path == meta.doc_path:
                 # only use if text differs from main text
                 if next.para != text:
-                    next_metas.append(next._asdict())
-                    total_text += next.para
+                    d = next._asdict()
+                    if 'corona_' in dataset:
+                        d['para'] = cut_next(next.para, text)
+                    next_metas.append(d)
+                    total_text += d['para']
             else:
                 next_exhausted = True
     prev_metas.reverse()
@@ -152,7 +185,8 @@ def search():
     return jsonify(process_query(query, q_emb_cache, faiss_index, metadata,
                                  k_results=k_results,
                                  remove_dupes=remove_dupes,
-                                 auto_context_size=auto_context_size))
+                                 auto_context_size=auto_context_size,
+                                 dataset_name=dataset_name))
 
 if __name__ == "__main__":
     app.run(debug=True)
