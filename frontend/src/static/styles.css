@@ -175,8 +175,9 @@ body #loading {
 }
 .search-result .matching-line {
     /* background-color: #007bff; */
-    background-color: #ff7b00;
+    /* background-color: #ff7b00; */
     /* background-color: #ff2020; */
+    background-color: #007b7b;
     color: white;
     padding: 2px 4px;
     border-radius: 4px;
