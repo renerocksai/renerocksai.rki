@@ -16,15 +16,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 supported_extensions=['.txt']
 
-separators=[
-    "\n\n",
-    "\n",
-    ".",
-    "!",
-    "?",
-    ",",
-    " ",
-]
+separators=[ "\n\n", "\n", ".", "!", "?", ",", " ", ]
 
 
 def len_func(text):
@@ -54,9 +46,16 @@ def convert_file(filn):
 
     # create a backup file so we can revert
     bak_file = filn + '.bak'
-    with open(filn, 'rt') as f:
-        f.read
-        text = f.read()
+    if os.path.exists(bak_file):
+        os.system(f"cp '{bak_file}' '{filn}'")
+    with open(filn, 'rt', errors='ignore') as f:
+        try:
+            text = f.read()
+        except:
+            print()
+            print()
+            print('ERROR IN FILE', filn)
+            raise RuntimeError()
 
     text = text.replace('\n', ' ')
     with open(bak_file, 'wt') as bak:

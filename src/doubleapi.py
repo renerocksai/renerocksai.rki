@@ -115,7 +115,7 @@ def format_result(result_number, metas, result_index, distance,
                 # only use if text differs from main text
                 if prev.para != text:
                     d = prev._asdict()
-                    if 'corona_' in dataset:
+                    if True or 'corona_' in dataset:
                         d['para'] = cut_prev(prev.para, text)
                     prev_metas.append(d)
                     total_text += d['para']
@@ -129,7 +129,7 @@ def format_result(result_number, metas, result_index, distance,
                 # only use if text differs from main text
                 if next.para != text:
                     d = next._asdict()
-                    if 'corona_' in dataset:
+                    if True or 'corona_' in dataset:
                         d['para'] = cut_next(next.para, text)
                     next_metas.append(d)
                     total_text += d['para']
