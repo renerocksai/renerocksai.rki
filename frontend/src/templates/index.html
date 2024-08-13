@@ -14,7 +14,7 @@
 <body>
     <div class="form-container">
         <h2>Semantische Suche in <a href="https://x.com/hashtag/rkifiles"
-                target="_blank">#RKIFiles</a> 
+                target="_blank">#RKIFiles</a>  und <a href="https://corona-protokolle.net" target="_blank">Corona-Protokollen</a>
                 <span style="color: orange" title="Daten neu aufbereitet, für noch bessere Suchergebnisse"><i>(neu!)</i></span></h1>
 
          <form id="search-form" hx-get="/search" hx-target="#results" hx-select="#search-results" hx-swap="innerHTML"
@@ -44,6 +44,26 @@
                             selected
                         {% endif %}
                     >Zusatzmaterial incl. Sitzungsprotokolle</option>
+                    <option value="corona_BKA"
+                        {% if dataset and dataset == "corona_BKA" %}
+                            selected
+                        {% endif %}
+                    >Protokolle Bundeskanzleramt Corona-Krisenstab</option>
+                    <option value="corona_BMG_BMI"
+                        {% if dataset and dataset == "corona_BMG_BMI" %}
+                            selected
+                        {% endif %}
+                    >Protokolle BMG BMI Gemeinsamer Corona-Krisenstab</option>
+                    <option value="corona_EXP_REGIERUNG"
+                        {% if dataset and dataset == "corona_EXP_REGIERUNG" %}
+                            selected
+                        {% endif %}
+                    >Protokolle Expertenrat der Bundesregierung zur COVID-19-Pandemie</option>
+                    <option value="corona_MPK"
+                        {% if dataset and dataset == "corona_EXP_REGIERUNG" %}
+                            selected
+                        {% endif %}
+                    >Protokolle Kanzlerin Ministerpräsidenten-Konferenz</option>
                 </select>
             </div>
             
