@@ -194,7 +194,7 @@ def search():
     permalink = permalink.replace('http://', 'https://')
     tweet_text=f'Sucht mal nach 🔎 "{query}" im #RKILeak: 🔗'
     if 'corona_' in dataset:
-        tweet_text=f'Sucht mal nach 🔎 "{query}" im in den Corona-Protokollen: 🔗'
+        tweet_text=f'Sucht mal nach 🔎 "{query}" in den Corona-Protokollen: 🔗'
 
     twitterlink = url_for_external(
         'x.com/intent/tweet',
