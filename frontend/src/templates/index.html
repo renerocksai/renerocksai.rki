@@ -76,6 +76,11 @@
                                     selected
                                 {% endif %}
                             >ALLES AUSSER RKI</option>
+                            <option value="corona_ABSOLUTELY_EVERYTHING"
+                                {% if dataset and dataset == "corona_ABSOLUTELY_EVERYTHING" %}
+                                    selected
+                                {% endif %}
+                            >ALLE Gremien (absolut alles)</option>
                         </select>
                     </div>
                     
