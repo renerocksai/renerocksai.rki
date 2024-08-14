@@ -23,9 +23,11 @@ app.config['COMPRESS_MIN_SIZE'] = 500
 @app.after_request
 def set_csp(response):
     csp = {
-        'default-src': ["'self'"],
+        'default-src': ["'self'", ],
         'script-src': ["'self'", ],
-        'style-src': ["'self'", "'unsafe-inline'"]
+        'style-src': ["'self'", "'unsafe-inline'"],
+        'frame-src': ["'self'", "https://www.rkileak.com"],  # Allow frames from specific domains
+
     }
     policy = "; ".join(f"{key} {' '.join(values)}" for key, values in csp.items())
     response.headers['Content-Security-Policy'] = policy

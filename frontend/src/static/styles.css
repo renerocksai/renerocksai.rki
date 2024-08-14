@@ -1,11 +1,51 @@
+.container {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    height: 90vh;
+}
+.content {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 100%;
+    transition: left 0.5s ease;
+}
+.active {
+    left: 0;
+}
+.inactive {
+    left: -100%;
+}
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    justify-content
+    justify-content: center;
+    margin: 0;
 }
+
+.buttonline {
+    height: 25px;
+    /* background-color: #808080; */
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding:0;
+    margin:0;
+}
+
 .form-container {
     max-width: 800px;
     margin: auto;
@@ -13,6 +53,8 @@ body {
     border: 1px solid #ccc;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    justify-content: center;
+    align-items: center;
 }
 .results-container {
     /* max-width: 800px; */
@@ -75,7 +117,7 @@ input[type="text"], select, input[type="range"], input[type="checkbox"], button 
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 16px;
+    font-size: 12px;
 }
 input[type="text"] {
     width: 90%;
@@ -223,3 +265,15 @@ body #loading {
     margin-left: 10px;
 }
 
+#div1 {
+ overflow-y: auto; /* Allows scrolling */
+    height: 100%; /* Ensure it has height for scrolling */
+    /* padding: 10px; /* Optional: to avoid content sticking to edges */ */
+}
+
+#switcherButton {
+    height: auto;
+    width: fit-content;
+    font-size: 10px;
+    padding: 2px;
+}
