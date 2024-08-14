@@ -81,6 +81,17 @@ def get_url_for(doc_path):
         p = doc_path.replace('data/Zusatzmaterial 2020-2023/Zusatzmaterial 2020-2023/', '')
         ret = f'https://www.rkileak.com/view?f=Zusatzmaterial/{p}'
         return ret
+    elif doc_path.startswith('data/corona-protokolle/'):
+        p = os.path.basename(doc_path)
+        if 'BMI' in p:
+            p = 'Protokolle BMG BMI Gemeinsamer Corona Krisenstab.pdf'
+        elif 'Bundeskanzleramt' in p:
+            p = 'Protokolle Bundeskanzleramt Corona Krisenstab.pdf'
+        elif 'kanzlerin' in p:
+            p = 'Protokolle Kanzlerin Ministerpräsidenten Konferenz.pdf'
+        elif 'Coronaexpertendezember_ocr' in p:
+            p = 'Protokolle ExpertInnenrat der Bundesregierung zur COVID-19 Pandemie.pdf'
+        return f'https://www.rkileak.com/view?f=Regierungsprotokolle/{p}'
     return '#'
 
 
@@ -96,6 +107,15 @@ def get_path_for(doc_path):
         return ret
     elif doc_path.startswith('data/corona-protokolle/'):
         ret = doc_path.replace('data/corona-protokolle/', '')
+        ret = os.path.basename(ret)
+        if 'BMI' in ret:
+            ret = 'Protokolle BMG BMI Gemeinsamer Corona Krisenstab.pdf'
+        elif 'Bundeskanzleramt' in ret:
+            ret = 'Protokolle Bundeskanzleramt Corona Krisenstab.pdf'
+        elif 'kanzlerin' in ret:
+            ret = 'Protokolle Kanzlerin Ministerpräsidenten Konferenz.pdf'
+        elif 'Coronaexpertendezember_ocr' in ret:
+            ret = 'Protokolle ExpertInnenrat der Bundesregierung zur COVID-19 Pandemie.pdf'
         return ret
     return '#'
 
@@ -113,6 +133,17 @@ def get_foreign_path(doc_path):
         p = doc_path.replace('data/Zusatzmaterial 2020-2023/Zusatzmaterial 2020-2023/', '')
         ret = f'Zusatzmaterial/{p}'
         return ret
+    elif doc_path.startswith('data/corona-protokolle/'):
+        p = os.path.basename(doc_path)
+        if 'BMI' in p:
+            p = 'Protokolle BMG BMI Gemeinsamer Corona Krisenstab.pdf'
+        elif 'Bundeskanzleramt' in p:
+            p = 'Protokolle Bundeskanzleramt Corona Krisenstab.pdf'
+        elif 'kanzlerin' in p:
+            p = 'Protokolle Kanzlerin Ministerpräsidenten Konferenz.pdf'
+        elif 'Coronaexpertendezember_ocr' in p:
+            p = 'Protokolle ExpertInnenrat der Bundesregierung zur COVID-19 Pandemie.pdf'
+        p = 'Regierungsprotokolle/' + os.path.basename(doc_path)
     return '#'
 
 app.jinja_env.filters['basename'] = basename
