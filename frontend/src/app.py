@@ -143,7 +143,8 @@ def get_foreign_path(doc_path):
             p = 'Protokolle Kanzlerin Ministerpräsidenten Konferenz.pdf'
         elif 'Coronaexpertendezember_ocr' in p:
             p = 'Protokolle ExpertInnenrat der Bundesregierung zur COVID-19 Pandemie.pdf'
-        p = 'Regierungsprotokolle/' + os.path.basename(doc_path)
+        p = 'Regierungsprotokolle/' + p
+        return p
     return '#'
 
 app.jinja_env.filters['basename'] = basename
