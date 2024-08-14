@@ -63,10 +63,14 @@ $ pip install -f requirements.txt
 # ONE-TIME: Create Dataset
 # convert everything into plain-text
 $ python src/convert.py ./data/Sitzungsprotokolle_orig_docx
-$ python src/preprocess.py ./data/Sitzungsprotokolle_orig_docx sitzungsprotokolle
+# (to convert to the new, improved dataset format)
+$ python src/convert2.py ./data/Sitzungsprotokolle_orig_docx
 
 # Obtain an API key from OpenAI.
 $ export OPENAI_RKI_KEY=xxxxx-xxxxx-xxxxx-xxx
+
+# Create embeddings for dataset
+$ python src/preprocess.py ./data/Sitzungsprotokolle_orig_docx sitzungsprotokolle
 
 # Start a search query on new dataset, show 30 results
 $ python main.py sitzungsprotokolle 30

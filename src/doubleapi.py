@@ -7,7 +7,7 @@ import main
 
 dataset_names = ['sitzungsprotokolle', 'zusatzmaterial', 
                  'corona_BKA', 'corona_BMG_BMI', 'corona_EXP_REGIERUNG',
-                 'corona_MPK',]
+                 'corona_MPK', 'corona_ALL']
 
 datasets = {}
 for dn in dataset_names:
@@ -115,8 +115,7 @@ def format_result(result_number, metas, result_index, distance,
                 # only use if text differs from main text
                 if prev.para != text:
                     d = prev._asdict()
-                    if True or 'corona_' in dataset:
-                        d['para'] = cut_prev(prev.para, text)
+                    d['para'] = cut_prev(prev.para, text)
                     prev_metas.append(d)
                     total_text += d['para']
             else:
@@ -129,8 +128,7 @@ def format_result(result_number, metas, result_index, distance,
                 # only use if text differs from main text
                 if next.para != text:
                     d = next._asdict()
-                    if True or 'corona_' in dataset:
-                        d['para'] = cut_next(next.para, text)
+                    d['para'] = cut_next(next.para, text)
                     next_metas.append(d)
                     total_text += d['para']
             else:

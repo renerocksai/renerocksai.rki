@@ -86,14 +86,14 @@ def get_url_for(doc_path):
     elif doc_path.startswith('data/corona-protokolle/'):
         p = os.path.basename(doc_path)
         if 'BMI' in p:
-            p = 'Protokolle BMG BMI Gemeinsamer Corona Krisenstab.pdf'
+            p = 'Regierungsprotokolle/Protokolle BMG BMI Gemeinsamer Corona Krisenstab.pdf'
         elif 'Bundeskanzleramt' in p:
-            p = 'Protokolle Bundeskanzleramt Corona Krisenstab.pdf'
+            p = 'Bundeskanzleramt/Protokolle Bundeskanzleramt Corona Krisenstab.pdf'
         elif 'kanzlerin' in p:
-            p = 'Protokolle Kanzlerin Ministerpräsidenten Konferenz.pdf'
+            p = 'MPK/Protokolle Kanzlerin Ministerpräsidenten Konferenz.pdf'
         elif 'Coronaexpertendezember_ocr' in p:
-            p = 'Protokolle ExpertInnenrat der Bundesregierung zur COVID-19 Pandemie.pdf'
-        return f'https://www.rkileak.com/view?f=Regierungsprotokolle/{p}'
+            p = 'Regierungs/Protokolle ExpertInnenrat der Bundesregierung zur COVID-19 Pandemie.pdf'
+        return f'https://www.rkileak.com/view?f={p}'
     return '#'
 
 
@@ -145,7 +145,6 @@ def get_foreign_path(doc_path):
             p = 'Protokolle Kanzlerin Ministerpräsidenten Konferenz.pdf'
         elif 'Coronaexpertendezember_ocr' in p:
             p = 'Protokolle ExpertInnenrat der Bundesregierung zur COVID-19 Pandemie.pdf'
-        p = 'Regierungsprotokolle/' + p
         return p
     return '#'
 
@@ -194,10 +193,6 @@ def search():
         remove_dupes = 'false'
     result_size = request.args.get('result_size', 20)
 
-    # if dataset == 'sitzungsprotokolle':
-    #     api_url = 'http://api-sitzungsprotokolle:5000/rkiapi/search'
-    # else:
-    #     api_url = 'http://api-zusatzmaterial:5000/rkiapi/search'
     if dataset not in ['sitzungsprotokolle', 'zusatzmaterial'] and not dataset.startswith('corona_'):
         dataset = 'sitzungsprotokolle'
 
@@ -235,10 +230,6 @@ def search():
         text=tweet_text,
         url=permalink,
     )
-    if 'corona_' in dataset:
-        template = 'corona_index.html'
-    else:
-        template = 'index.html'
     return render_template('index.html', results=results,
                            permalink=permalink,
                            twitterlink=twitterlink,

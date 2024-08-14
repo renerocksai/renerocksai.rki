@@ -71,6 +71,11 @@
                                     selected
                                 {% endif %}
                             >Protokolle Kanzlerin Ministerpräsidenten-Konferenz</option>
+                            <option value="corona_ALL"
+                                {% if dataset and dataset == "corona_ALL" %}
+                                    selected
+                                {% endif %}
+                            >ALLES AUSSER RKI</option>
                         </select>
                     </div>
                     
