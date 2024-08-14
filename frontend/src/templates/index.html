@@ -13,9 +13,9 @@
 </head>
 <body>
     <div class="form-container">
-        <h2>Semantische Suche in <a href="https://x.com/hashtag/rkifiles"
+        <h3>Semantische Suche in <a href="https://x.com/hashtag/rkifiles"
                 target="_blank">#RKIFiles</a>  und <a href="https://corona-protokolle.net" target="_blank">Corona-Protokollen</a>
-                <span style="color: orange" title="Daten neu aufbereitet, für noch bessere Suchergebnisse"><i>(neu!)</i></span></h1>
+                <span style="color: orange" title="Daten neu aufbereitet, für noch bessere Suchergebnisse"><i>(neu!)</i></span></h3>
 
          <form id="search-form" hx-get="/search" hx-target="#results" hx-select="#search-results" hx-swap="innerHTML"
              >
@@ -87,7 +87,7 @@
             
             <div class="field-horizontal slider-container">
                 <label for="result_size">Textlänge pro Ergebnis (Zeichen):</label>
-                <input type="range" id="result_size" name="result_size" min="20" max="1000" 
+                <input type="range" id="result_size" name="result_size" min="20" max="5000" 
                 {% if result_size %}
                     value="{{ result_size }}"
                 {% else %}
@@ -119,8 +119,7 @@
             Watch the Talk
         </a>
         <a href="https://github.com/renerocksai/renerocksai.rki" target="_blank">
-            <img src="{{ url_for('static', filename='github-mark.svg') }}" alt="GitHub" class="github-logo">
-            rki-search on GitHub
+            <img src="{{ url_for('static', filename='github-mark.svg') }}" alt="GitHub" class="github-logo"> Code on GitHub
         </a>
     </div>
     <script src="/static/startup.js"></script>

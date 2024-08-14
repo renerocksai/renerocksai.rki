@@ -4,6 +4,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    justify-content
 }
 .form-container {
     max-width: 800px;
@@ -32,6 +33,12 @@ h2 {
     text-align: center;
     margin-bottom: 20px;
 }
+
+h3 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
 .field {
     margin-bottom: 20px;
     display: flex;
