@@ -179,6 +179,12 @@ def search():
         return jsonify({"error": "remove_dupes parameter is invalid"}), 400
     remove_dupes = remove_dupes == 'true'
 
+    # a bit of sanity
+    if k_results > 1000:
+        k_results = 1000
+    if auto_context_size > 5000:
+        auto_context_size = 5000
+
     q_emb_cache = datasets[dataset_name]['qcache']
     faiss_index = datasets[dataset_name]['faiss']
     metadata = datasets[dataset_name]['metadata']
