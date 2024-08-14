@@ -86,13 +86,13 @@ def get_url_for(doc_path):
     elif doc_path.startswith('data/corona-protokolle/'):
         p = os.path.basename(doc_path)
         if 'BMI' in p:
-            p = 'Regierungsprotokolle/Protokolle BMG BMI Gemeinsamer Corona Krisenstab.pdf'
+            p = 'BMG_BMI/Protokolle BMG BMI Gemeinsamer Corona Krisenstab.pdf'
         elif 'Bundeskanzleramt' in p:
             p = 'Bundeskanzleramt/Protokolle Bundeskanzleramt Corona Krisenstab.pdf'
         elif 'kanzlerin' in p:
             p = 'MPK/Protokolle Kanzlerin Ministerpräsidenten Konferenz.pdf'
         elif 'Coronaexpertendezember_ocr' in p:
-            p = 'Regierungs/Protokolle ExpertInnenrat der Bundesregierung zur COVID-19 Pandemie.pdf'
+            p = 'Expertenrat/Protokolle ExpertInnenrat der Bundesregierung zur COVID-19 Pandemie.pdf'
         return f'https://www.rkileak.com/view?f={p}'
     return '#'
 
