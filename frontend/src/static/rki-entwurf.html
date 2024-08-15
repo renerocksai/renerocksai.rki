@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recherche RKI-Protokolle mit Entwurfs-Dateien</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        header, article, footer {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        header p {
+            color: #555;
+        }
+        article {
+            margin-top: 20px;
+        }
+        article h2 {
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+        article p {
+            margin: 10px 0;
+        }
+        footer {
+            margin-top: 40px;
+            font-size: 0.9em;
+            text-align: center;
+            color: #888;
+        }
+        iframe {
+            width: 100%;
+            max-width: 100%;
+            height: 640px;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Recherche RKI-Protokolle mit Entwurfs-Dateien</h1>
+    <p><em><a href="https://x.com/renerocksai">@renerocksai</a></em></p>
+    <p>Published on 2024-08-15</p>
+</header>
+
+<article>
+    <h2>Suche nach Ergebnisprotokoll-Entwürfen</h2>
+    <p>Fand folgendermaßen statt:</p>
+    <pre>find Zusatzmaterial\ 2020-2023 -iname '*Entwurf*' |grep Ergebnisprotokoll | grep '.docx$'</pre>
+    <p>... und lieferte diese Ergebnisse:</p>
+    <pre>
+    2020-01-24_Lage_AG/Archiv/Ergebnisprotokoll_AG-nCoV-Sitzung_2020-01-24_Entwurf.docx
+    2020-02-03_Lage_AG/Ergebnisprotokoll_AG-nCoV-Sitzung_2020-02-03-Entwurf.docx
+    2020-02-03_Lage_AG/Ergebnisprotokoll_AG-nCoV-Sitzung_2020-02-03-Entwurf_WH.docx
+    2020-02-04_Lage AG/Ergebnisprotokoll_AG-nCoV-Sitzung_2020-02-04-Entwurf.docx
+    2020-02-04_Lage AG/Ergebnisprotokoll_AG-nCoV-Sitzung_2020-02-04-Entwurf_V2.docx
+    2020-02-04_Lage AG/Ergebnisprotokoll_AG-nCoV-Sitzung_2020-02-04-Entwurf_ma.docx
+    2020-02-20_Lage-AG/Ergebnisprotokoll_AG-nCoV-Sitzung_2020-02-20_Entwurf.docx
+    2020-03-25_Lage_AG/Archiv/Ergebnisprotokoll_Krisenstabssitzung_2020-03-25_Entwurf.docx
+    2020-07-31_Lage_AG/Entwurf_Ergebnisprotokoll_Krisenstabssitzung_2020-07-31.docx
+    2020-11-18_Lage_AG/Ergebnisprotokoll_Krisenstabssitzung_2020-11-18_Entwurf.docx
+    2023-01-18_Lage-AG/Ergebnisprotokoll_Lage-AG-Sitzung_2023-01-18_Entwurf.docx
+    2023-05-10_Lage-AG/Ergebnisprotokoll_Lage-AG-Sitzung_2023-05-10_Entwurf.docx
+    2023-05-24_Lage-AG/Ergebnisprotokoll_Lage-AG-Sitzung_2023-05-24_Entwurf.docx
+    </pre>
+    <p>In den folgenden Abschnitten widmen wir uns den einzelnen Tagen. Wir liefern
+    zu jedem analysierten Dokument die von Microsoft Word gespeicherten Metadaten. Diese
+    sind weniger anfällig als vom Filesystem des Computers getrackte Metadaten wie Erstellungs-
+    und Modifikationszeitstempel ; sie werden nur beim Seichern von Word aktualisiert.
+    </p>
+
+    <p>Verwenden Sie bei jeweils bei der Vergleichs-Anzeige das "... More"-Menü und klicken 
+    Sie auf "Full-Screen".</p>
+
+    <p>Die Linke Datei ist jeweils "A" und die rechte "B", was die Metadaten (siehe unten)
+    betrifft.</p>
+
+
+
+    <hr>
+    <h2>2021-01-24</h2>
+    <pre>
+    A=Ergebnisprotokoll_AG-nCoV-Sitzung_2020-01-24_Entwurf.docx, 
+    created=2020-01-25 08:32:00+00:00, 
+    modified=2020-01-25 15:01:00+00:00, 
+    revision=3, 
+    author=Ute Rexroth, 
+    last_modified_by=an der Heiden, Maria
+
+    B=Ergebnisprotokoll_AG-nCoV-Sitzung_2020-01-25.docx, 
+    created=2020-01-25 13:04:00+00:00, 
+    modified=2021-04-12 13:40:00+00:00, 
+    revision=15, 
+    author=Ute Rexroth, 
+    last_modified_by=Grote, Ulrike
+    </pre>
+    <iframe src="https://draftable.com/compare/aFZKnQGyAfqy" style="border:none;overflow:hidden;" scrolling="no" frameborder="0" allowfullscreen></iframe>
+    <hr>
+
+
+
+    <h2>2021-02-03</h2>
+    <p>Hier gibt es drei Dateien. Erst die "Draft"-Version, dann, einen Tag später, die "Entwurf_WH"-Version und schließlich, über ein Jahr später, die "Entwurf"-Version.</p>
+    <p>Wir vergleichen "Draft" mit "Entwurf" und "Draft" mit "Entwurf_WH":</p>
+    <pre>
+    A=Ergebnisprotokoll_AG-nCoV-Sitzung_2020-02-03_Draft.docx, 
+    created=2020-02-03 17:43:00+00:00, 
+    modified=2020-02-03 20:57:00+00:00, 
+    revision=4, 
+    author=Ute Rexroth, 
+    last_modified_by=Rexroth, Ute
+
+    B=Ergebnisprotokoll_AG-nCoV-Sitzung_2020-02-03-Entwurf.docx, 
+    created=2020-02-03 20:58:00+00:00, 
+    modified=2021-04-12 13:49:00+00:00, 
+    revision=4, 
+    author=Ute Rexroth, 
+    last_modified_by=Grote, Ulrike
+    </pre>
+    <iframe src="https://draftable.com/compare/pCPBJMrEXOtz" style="border:none;overflow:hidden;" scrolling="no" frameborder="0" allowfullscreen></iframe>
+    <hr>
+
+    <pre>
+    A=Ergebnisprotokoll_AG-nCoV-Sitzung_2020-02-03_Draft.docx, 
+    created=2020-02-03 17:43:00+00:00, 
+    modified=2020-02-03 20:57:00+00:00, 
+    revision=4, 
+    author=Ute Rexroth, 
+    last_modified_by=Rexroth, Ute
+
+    B=Ergebnisprotokoll_AG-nCoV-Sitzung_2020-02-03-Entwurf_WH.docx, 
+    created=2020-02-04 09:42:00+00:00, 
+    modified=2020-02-04 17:25:00+00:00, 
+    revision=3, 
+    author=Ute Rexroth, 
+    last_modified_by=Michel, Janine
+    </pre>
+    <iframe src="https://draftable.com/compare/ZEcHJTiblQdv" style="border:none;overflow:hidden;" scrolling="no" frameborder="0" allowfullscreen></iframe>
+    <hr>
+
+
+
+    <h2>2021-02-04</h2>
+    <p>Auch zu diesem Tag finden sich 3 Protokoll-Versionen; in chronologischer Reihenfolge: "Entwurf", "Entwurf_V2" und schließlich "Entwurf_ma".</p>
+    <pre>
+    A=Ergebnisprotokoll_AG-nCoV-Sitzung_2020-02-04-Entwurf.docx, 
+    created=2020-02-04 15:38:00+00:00, 
+    modified=2020-02-04 16:17:00+00:00, 
+    revision=6, 
+    author=Ute Rexroth, 
+    last_modified_by=Markus, Inessa
+
+    B=Ergebnisprotokoll_AG-nCoV-Sitzung_2020-02-04-Entwurf_V2.docx, 
+    created=2020-02-04 15:38:00+00:00, 
+    modified=2020-02-05 09:42:00+00:00, 
+    revision=6, 
+    author=Ute Rexroth, 
+    last_modified_by=Reupke, Marie
+    </pre>
+    <iframe src="https://draftable.com/compare/PETZpZLjqdBp" style="border:none;overflow:hidden;" scrolling="no" frameborder="0" allowfullscreen></iframe>
+    <hr>
+
+    <pre>
+    A=Ergebnisprotokoll_AG-nCoV-Sitzung_2020-02-04-Entwurf_V2.docx, 
+    created=2020-02-04 15:38:00+00:00, 
+    modified=2020-02-05 09:42:00+00:00, 
+    revision=6, 
+    author=Ute Rexroth, 
+    last_modified_by=Reupke, Marie
+
+    B=Ergebnisprotokoll_AG-nCoV-Sitzung_2020-02-04-Entwurf_ma.docx, 
+    created=2020-02-04 17:37:00+00:00, 
+    modified=2021-04-12 13:51:00+00:00, 
+    revision=5, 
+    author=Ute Rexroth, 
+    last_modified_by=Grote, Ulrike
+    </pre>
+    <iframe src="https://draftable.com/compare/juRqDdpKXzum" style="border:none;overflow:hidden;" scrolling="no" frameborder="0" allowfullscreen></iframe>
+    <hr>
+
+
+    <h2>2020-02-20</h2>
+    <pre>
+    A=Ergebnisprotokoll_AG-nCoV-Sitzung_2020-02-20_Entwurf.docx, 
+    created=2020-02-20 08:26:00+00:00, 
+    modified=2022-12-22 10:27:00+00:00, 
+    revision=3, 
+    author=Ute Rexroth, 
+    last_modified_by=Rexroth, Ute
+
+    B=Ergebnisprotokoll_AG-nCoV-Sitzung_2020-02-20.docx, 
+    created=2020-02-20 17:03:00+00:00, 
+    modified=2021-04-12 14:04:00+00:00, 
+    revision=14, 
+    author=Ute Rexroth, 
+    last_modified_by=Grote, Ulrike
+    </pre>
+    <iframe src="https://draftable.com/compare/EUhVRIbVDejd" style="border:none;overflow:hidden;" scrolling="no" frameborder="0" allowfullscreen></iframe>
+    <hr>
+
+
+
+    <h2>2020-03-25</h2>
+    <pre>
+    A=Ergebnisprotokoll_Krisenstabssitzung_2020-03-25_Entwurf.docx, 
+    created=2020-03-25 09:36:00+00:00, 
+    modified=2020-03-25 12:24:00+00:00, 
+    revision=9, 
+    author=Ute Rexroth, 
+    last_modified_by=Litzba, Nadine
+
+    B=Ergebnisprotokoll_Krisenstabssitzung_2020-03-25.docx, 
+    created=2020-03-25 12:29:00+00:00, 
+    modified=2023-01-03 08:21:00+00:00, 
+    revision=32, 
+    author=Ute Rexroth, 
+    last_modified_by=Hanke, B.
+    </pre>
+    <iframe src="https://draftable.com/compare/kslWwsyeLXRa" style="border:none;overflow:hidden;" scrolling="no" frameborder="0" allowfullscreen></iframe>
+    <hr>
+
+    <h2>2020-07-31</h2>
+    <p>Erneut 3 Versionen: "Entwurf", "Anmerkung_IBBS" und das fertige Protokoll ohne "Entwurf".</p>
+    <pre>
+    A=Entwurf_Ergebnisprotokoll_Krisenstabssitzung_2020-07-31.docx, 
+    created=2020-07-31 15:19:00+00:00, 
+    modified=2020-07-31 16:05:00+00:00, 
+    revision=37, 
+    author=Ute Rexroth, 
+    last_modified_by=Markus, Inessa
+
+    B=Ergebnisprotokoll_Krisenstabssitzung_2020-07-31_Anmerkungen_IBBS.DOCX, 
+    created=2020-08-03 12:07:00+00:00, 
+    modified=2021-05-10 14:13:00+00:00, 
+    revision=4, 
+    author=Ute Rexroth, 
+    last_modified_by=Grote, Ulrike
+    </pre>
+    <iframe src="https://draftable.com/compare/wlfOEFPasohv" style="border:none;overflow:hidden;" scrolling="no" frameborder="0" allowfullscreen></iframe>
+    <hr>
+
+    <pre>
+    A=Entwurf_Ergebnisprotokoll_Krisenstabssitzung_2020-07-31.docx, 
+    created=2020-07-31 15:19:00+00:00, 
+    modified=2020-07-31 16:05:00+00:00, 
+    revision=37, 
+    author=Ute Rexroth, 
+    last_modified_by=Markus, Inessa
+
+    B=Ergebnisprotokoll_Krisenstabssitzung_2020-07-31.docx, 
+    created=2020-07-31 16:06:00+00:00, 
+    modified=2020-07-31 16:56:00+00:00, 
+    revision=9, 
+    author=Ute Rexroth, 
+    last_modified_by=Markus, Inessa
+    </pre>
+    <iframe src="https://draftable.com/compare/CszsBKoaXdyY" style="border:none;overflow:hidden;" scrolling="no" frameborder="0" allowfullscreen></iframe>
+    <hr>
+
+    <h2>2020-11-18</h2>
+    <pre>
+    A=Ergebnisprotokoll_Krisenstabssitzung_2020-11-18_Entwurf.docx, 
+    created=2020-11-18 09:18:00+00:00, 
+    modified=2020-11-18 15:34:00+00:00, 
+    revision=6, 
+    author=Ute Rexroth, 
+    last_modified_by=Pörtner, Kirsten
+
+    B=Ergebnisprotokoll_Krisenstabssitzung_2020-11-18.docx, 
+    created=2020-11-18 15:41:00+00:00, 
+    modified=2021-05-06 13:41:00+00:00, 
+    revision=4, 
+    author=Ute Rexroth, 
+    last_modified_by=Grote, Ulrike
+    </pre>
+    <iframe src="https://draftable.com/compare/ytqjgVBshBIe" style="border:none;overflow:hidden;" scrolling="no" frameborder="0" allowfullscreen></iframe>
+    <hr>
+
+
+    <h2>2023-01-18</h2>
+    <p>Hier gibt es außer dem "Entwurf" keine weiteren Protokoll-Dateien, also nichts zu vergleichen</p>
+    <pre>
+    A=Ergebnisprotokoll_Lage-AG-Sitzung_2023-01-18_Entwurf.docx, 
+    created=2023-01-19 08:25:00+00:00, 
+    modified=2023-01-20 17:59:00+00:00, 
+    revision=9, 
+    author=Ute Rexroth, 
+    last_modified_by=Jung-Sendzik, Tanja
+    </pre>
+
+    <h2>2023-05-10</h2>
+    <p>Hier gibt es außer dem "Entwurf" keine weiteren Protokoll-Dateien, also nichts zu vergleichen</p>
+    <pre>
+    A=Ergebnisprotokoll_Lage-AG-Sitzung_2023-05-10_Entwurf.docx, 
+    created=2023-05-10 06:58:00+00:00, 
+    modified=2023-05-22 18:50:00+00:00, 
+    revision=29, 
+    author=Ute Rexroth, 
+    last_modified_by=jor
+    </pre>
+
+    <h2>2023-05-24</h2>
+    <p>Hier gibt es außer dem "Entwurf" keine weiteren Protokoll-Dateien, also nichts zu vergleichen</p>
+    <pre>
+    A=Ergebnisprotokoll_Lage-AG-Sitzung_2023-05-24_Entwurf.docx, 
+    created=2023-05-25 07:45:00+00:00, 
+    modified=2023-05-25 15:18:00+00:00, 
+    revision=10, 
+    author=Ute Rexroth, 
+    last_modified_by=Püschel, Nadine
+    </pre>
+
+
+</article>
+
+<footer>
+    <p>&copy; 2024 <a href="https://x.com/renerocksai">@renerocksai</a></p>
+</footer>
+
+</body>
+</html>
+
