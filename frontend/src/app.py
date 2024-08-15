@@ -26,7 +26,7 @@ def set_csp(response):
         'default-src': ["'self'", ],
         'script-src': ["'self'", ],
         'style-src': ["'self'", "'unsafe-inline'"],
-        'frame-src': ["'self'", "https://www.rkileak.com"],  # Allow frames from specific domains
+        'frame-src': ["'self'", "https://www.rkileak.com", "https://draftable.com"],  # Allow frames from specific domains
 
     }
     policy = "; ".join(f"{key} {' '.join(values)}" for key, values in csp.items())
