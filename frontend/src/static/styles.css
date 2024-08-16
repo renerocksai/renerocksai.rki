@@ -277,3 +277,39 @@ body #loading {
     font-size: 10px;
     padding: 2px;
 }
+
+.examples-container {
+    margin-bottom: 20px;
+}
+
+.examples-container h3 {
+    padding: 0;
+    margin-top: 0;
+    color: indianred;
+    text-decoration: underline;
+}
+
+.example-search {
+    width: fit-content;
+    max-width: 100%;
+}
+.search-link {
+    display: flex;
+    text-decoration: none;
+    color: #007bff;
+    margin-bottom: 10px;
+}
+
+.emoji {
+    flex: 0 0 auto; /* Prevents the emoji from wrapping */
+    margin-right: 1px; /* Adjust spacing between emoji and text */
+    padding-bottom: 10px;
+
+}
+
+.text {
+    flex: 1 1 auto;
+    /* text-indent: -5px; */
+    padding-left: calc(1em + 0px); /* Indentation equal to the width of the emoji plus any margin */
+    word-wrap: break-word; /* Breaks the text at the div's width */
+}
