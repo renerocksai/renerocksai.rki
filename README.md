@@ -61,9 +61,9 @@ $ source env/bin/activate
 $ pip install -f requirements.txt
 
 # ONE-TIME: Create Dataset
-# convert everything into plain-text
+# 1. convert everything into plain-text
 $ python src/convert.py ./data/Sitzungsprotokolle_orig_docx
-# (to convert to the new, improved dataset format)
+# 2. split & convert to the new, improved dataset format
 $ python src/convert2.py ./data/Sitzungsprotokolle_orig_docx
 
 # Obtain an API key from OpenAI.
