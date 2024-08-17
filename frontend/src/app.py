@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, jsonify, g, make_response, url_for
+from flask import Flask, render_template, request, jsonify, g, make_response, url_for, redirect, abort, send_from_directory
 import requests
 from flask_htmx import HTMX
 from flask_talisman import Talisman
@@ -10,6 +10,10 @@ from flask_compress import Compress
 import uuid
 from urllib.parse import urlencode, urlunparse
 
+dataset_names = ['sitzungsprotokolle', 'zusatzmaterial', 
+                 'corona_BKA', 'corona_BMG_BMI', 'corona_EXP_REGIERUNG',
+                 'corona_MPK', 'corona_ALL', 'corona_ABSOLUTELY_EVERYTHING',
+                 'pei_files', ]
 
 app = Flask(__name__)
 htmx = HTMX(app)
@@ -94,6 +98,8 @@ def get_url_for(doc_path):
         elif 'Coronaexpertendezember_ocr' in p:
             p = 'Expertenrat/Protokolle ExpertInnenrat der Bundesregierung zur COVID-19 Pandemie.pdf'
         return f'https://www.rkileak.com/view?f={p}'
+    elif doc_path.startswith('data/pei-files'):
+        return url_for('view_pdf', dataset='pei_files', filn=os.path.basename(doc_path))
     return '#'
 
 
@@ -119,6 +125,9 @@ def get_path_for(doc_path):
         elif 'Coronaexpertendezember_ocr' in ret:
             ret = 'Protokolle ExpertInnenrat der Bundesregierung zur COVID-19 Pandemie.pdf'
         return ret
+    elif doc_path.startswith('data/pei-files'):
+        return doc_path.replace('data/pei-files/', '')
+
     return '#'
 
 def get_foreign_path(doc_path):
@@ -175,7 +184,8 @@ def index():
 @app.route('/corona-protokolle', methods=['GET'])
 @limiter.limit(f"{RATE_PER_MINUTE} per minute")
 def corona_index():
-    return render_template('corona_index.html')
+    # phase out the special casing
+    return redirect(url_for('index'))
 
 
 # Endpoint to handle search and update the results
@@ -193,7 +203,7 @@ def search():
         remove_dupes = 'false'
     result_size = request.args.get('result_size', 20)
 
-    if dataset not in ['sitzungsprotokolle', 'zusatzmaterial'] and not dataset.startswith('corona_'):
+    if dataset not in dataset_names:
         dataset = 'sitzungsprotokolle'
 
     api_url = 'http://api:5000/rkiapi/search'
@@ -224,6 +234,8 @@ def search():
     tweet_text=f'Sucht mal nach 🔎 "{query}" in den Corona-Files: 🔗'
     if 'corona_' in dataset:
         tweet_text=f'Sucht mal nach 🔎 "{query}" in den Corona-Files: 🔗'
+    if 'pei_' in dataset:
+        tweet_text=f'Sucht mal nach 🔎 "{query}" in den PEI-Files: 🔗'
 
     twitterlink = url_for_external(
         'x.com/intent/tweet',
@@ -239,6 +251,44 @@ def search():
                            remove_dupes=remove_dupes,
                            result_size=result_size,
                            )
+
+
+# Endpoint to handle PDF upstream for preview
+@app.route('/view_pdf', methods=['GET'])
+@limiter.limit(f"{RATE_PER_MINUTE} per minute")
+def view_pdf():
+    dataset = request.args.get('dataset', None)
+    filn = request.args.get('filn', None)
+    
+    if (dataset is None) or (filn is None):
+        abort(404)
+
+    return render_template('view_pdf.html',
+                           dataset=dataset,
+                           filn=filn,
+                           )
+
+
+# Endpoint to handle PDF upstream for preview
+@app.route('/pdf/<dataset>/<filn>', methods=['GET'])
+@limiter.limit(f"{RATE_PER_MINUTE} per minute")
+def serve_pdf(dataset, filn):
+    if dataset not in dataset_names:
+        print("DATASET NAME INVALID", flush=True)
+        abort(404)
+    file_path = os.path.join(app.static_folder, dataset, filn)
+    if not os.path.exists(file_path):
+        print("FILE DOES NOT EXIST", dataset, filn, flush=True)
+        abort(404)
+
+    render_path = os.path.join(dataset, filn)
+    return send_from_directory(app.static_folder, render_path)
+
+
+# Custom 404 error handler
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 
 # API pass-through endpoint

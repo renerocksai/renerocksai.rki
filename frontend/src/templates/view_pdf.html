@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corona-Files PDF Anzeige</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+    <link rel="manifest" href="/static/site.webmanifest">
+    <link rel="stylesheet" type="text/css" href="/static/viewstyles.css">
+</head>
+<body>
+    <h2><a href="https://corona-files.com">CORONA-Files.com</a> Datei-Anzeige</h2>
+    <h2><span class="label">Ordner:</span> <span class="file">{{dataset}}</span></h2>
+    <h3><span class="label">Datei:</span> <span class="file">{{filn}}</span></h2>
+
+    <!-- Embed PDF -->
+    <embed src="{{ url_for('serve_pdf', filn=filn, dataset=dataset) }}" type="application/pdf" />
+</body>
+</html>

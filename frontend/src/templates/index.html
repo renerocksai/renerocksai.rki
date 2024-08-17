@@ -22,8 +22,8 @@
             <div class="form-container">
                 <h3>Semantische Suche in <a
                         href="https://rki-transparenzbericht.de"
-                        target="_blank">#RKIFiles</a>  und <a href="https://corona-protokolle.net" target="_blank">Corona-Protokollen</a>
-                        <span style="color: orange" title="Daten neu aufbereitet, für noch bessere Suchergebnisse"><i>(neu!)</i></span></h3>
+                        target="_blank">#RKIFiles</a>, <a href="https://corona-protokolle.net" target="_blank">Corona-Protokollen</a>
+                        und <span style="color: orange"><i>PEI-Files</i></span></h3>
 
                  <form id="search-form" hx-get="/search" hx-target="#results" hx-select="#search-results" hx-swap="innerHTML"
                      >
@@ -76,12 +76,17 @@
                                 {% if dataset and dataset == "corona_ALL" %}
                                     selected
                                 {% endif %}
-                            >ALLES AUSSER RKI</option>
+                            >ALLES AUSSER RKI und PEI</option>
                             <option value="corona_ABSOLUTELY_EVERYTHING"
                                 {% if dataset and dataset == "corona_ABSOLUTELY_EVERYTHING" %}
                                     selected
                                 {% endif %}
-                            >ALLE Gremien (absolut alles)</option>
+                            >ALLE Gremien (ausser PEI)</option>
+                            <option value="pei_files"
+                                {% if dataset and dataset == "pei_files" %}
+                                    selected
+                                {% endif %}
+                            >PEI-Files</option>
                         </select>
                     </div>
                     
