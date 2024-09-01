@@ -13,7 +13,7 @@ from urllib.parse import urlencode, urlunparse
 dataset_names = ['sitzungsprotokolle', 'zusatzmaterial', 
                  'corona_BKA', 'corona_BMG_BMI', 'corona_EXP_REGIERUNG',
                  'corona_MPK', 'corona_ALL', 'corona_ABSOLUTELY_EVERYTHING',
-                 'pei_files', ]
+                 'pei_files', 'kanzleramt_mails']
 
 app = Flask(__name__)
 htmx = HTMX(app)
@@ -100,6 +100,8 @@ def get_url_for(doc_path):
         return f'https://www.rkileak.com/view?f={p}'
     elif doc_path.startswith('data/pei-files'):
         return url_for('view_pdf', dataset='pei_files', filn=os.path.basename(doc_path))
+    elif doc_path.startswith('./data/kanzleramt-mails'):
+        return url_for('view_pdf', dataset='kanzleramt_mails', filn=os.path.basename(doc_path))
     return '#'
 
 
@@ -127,7 +129,8 @@ def get_path_for(doc_path):
         return ret
     elif doc_path.startswith('data/pei-files'):
         return doc_path.replace('data/pei-files/', '')
-
+    elif doc_path.startswith('./data/kanzleramt-mails'):
+        return doc_path.replace('./data/kanzleramt-mails/', '')
     return '#'
 
 def get_foreign_path(doc_path):

@@ -20,6 +20,8 @@ COPY datasets-release/corona_ABSOLUTELY_EVERYTHING_faiss.index /datasets/corona_
 COPY datasets-release/corona_ABSOLUTELY_EVERYTHING_metadata.pkl /datasets/corona_ABSOLUTELY_EVERYTHING_metadata.pkl
 COPY datasets-release/pei_files_faiss.index /datasets/pei_files_faiss.index
 COPY datasets-release/pei_files_metadata.pkl /datasets/pei_files_metadata.pkl
+COPY datasets-release/kanzleramt_mails_faiss.index /datasets/kanzleramt_mails_faiss.index
+COPY datasets-release/kanzleramt_mails_metadata.pkl /datasets/kanzleramt_mails_metadata.pkl
 
 COPY requirements.txt .
 
@@ -44,6 +46,7 @@ ENV RKI_DATASET_corona_MPK=corona-MPK
 ENV RKI_DATASET_corona_ALL=corona_ALL
 ENV RKI_DATASET_corona_ABSOLUTELY_EVERYTHING=corona_ABSOLUTELY_EVERYTHING
 ENV RKI_DATASET_pei_files=pei_files
+ENV RKI_DATASET_kanzleramt_mails=kanzleramt_mails
 
 # Run app.py when the container launches
 CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:5000", "doubleapi:app", "--access-logfile", "/logs/api.access.log", "--error-logfile", "/logs/api.error.log"]

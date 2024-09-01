@@ -8,7 +8,7 @@ import main
 dataset_names = ['sitzungsprotokolle', 'zusatzmaterial', 
                  'corona_BKA', 'corona_BMG_BMI', 'corona_EXP_REGIERUNG',
                  'corona_MPK', 'corona_ALL', 'corona_ABSOLUTELY_EVERYTHING',
-                 'pei_files', ]
+                 'pei_files', 'kanzleramt_mails']
 
 datasets = {}
 for dn in dataset_names:
